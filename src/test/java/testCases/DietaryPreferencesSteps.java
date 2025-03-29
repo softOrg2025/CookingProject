@@ -19,6 +19,7 @@ public class DietaryPreferencesSteps {
     private List<String> filteredMeals;
 
 
+
     @Given("I am logged in as the head chef")
     public void iAmLoggedInAsTheHeadChef() {
         System.out.println("Logged in as the head chef");
