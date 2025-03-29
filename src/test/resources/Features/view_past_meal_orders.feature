@@ -15,4 +15,4 @@ Feature: View Past Meal Orders
     When I click "Reorder" on an order containing "Vegetable Curry"
     Then "Vegetable Curry" should be added to my current cart
     And I should see a confirmation message "Meal added to cart!"
-    
+
