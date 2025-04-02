@@ -16,3 +16,9 @@ Feature: View Past Meal Orders
     Then "Vegetable Curry" should be added to my current cart
     And I should see a confirmation message "Meal added to cart!"
 
+  Scenario: Customer filters past orders by date
+    Given the customer is viewing past orders
+    When the customer filters orders by a specific date range
+    Then the system should display only orders within that range
+    And the orders should be sorted from newest to oldest
+    And if no orders match, a message "No orders found in this range." should be shown
