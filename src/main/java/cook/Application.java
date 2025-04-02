@@ -24,12 +24,25 @@ public class Application {
 
     public static List<Meal> exclude(List<String> allergies) {
         List<Meal> suggestedMeals = new ArrayList<>();
-        for(Meal meal :meals){
-            for(String allergy :allergies){
-                if(!meal.getIngredients().contains(allergy))
-                    suggestedMeals.add(meal);
+
+        for (Meal meal : meals) {
+            boolean containsAllergy = false;
+            for (String allergy : allergies) {
+                if (meal.getIngredients().contains(allergy)) {
+                    containsAllergy = true;
+                    break;
+                }
+            }
+            if (!containsAllergy) {
+                suggestedMeals.add(meal);
             }
         }
         return suggestedMeals;
+    }
+
+
+    public static void saveMeal(Meal meal) {
+        meals.add(meal);
+        System.out.println("Meal saved: " + meal.getName());
     }
 }
