@@ -14,12 +14,15 @@ public class KitchenManagerTaskAssignmentSteps {
 
     private boolean isExpertChefSuggested;
     private boolean taskAssignedBasedOnExpertise;
+    private final TestContext context;
 
-    // 🚀 السيناريو الأول: مدير المطبخ يعين مهمة للطاهي
+    public KitchenManagerTaskAssignmentSteps(TestContext context) {
+        this.context = context;
+    }
+
     @Given("the kitchen manager is logged into the system")
     public void theKitchenManagerIsLoggedIntoTheSystem() {
-        kitchenManagerLoggedIn = true;
-        Assertions.assertTrue(kitchenManagerLoggedIn);
+        context.isLoggedIn = true;
     }
 
     @When("the kitchen manager selects a chef")

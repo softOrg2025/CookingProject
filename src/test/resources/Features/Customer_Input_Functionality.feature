@@ -1,4 +1,4 @@
-Feature:Allow customers to create custom meal requests
+Feature: Allow customers to create custom meal requests
 
   As a customer,
   I want to input my dietary preferences and allergies so that the system
