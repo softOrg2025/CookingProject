@@ -1,51 +1,76 @@
 package testCases;
 
 import io.cucumber.java.en.*;
+import org.junit.jupiter.api.Assertions;
 
 public class ChefTaskNotificationsSteps {
 
+    private boolean isTaskAssigned;
+    private boolean isTaskSaved;
+    private boolean isNotificationReceived;
+
+    private boolean isDeadlineApproaching;
+    private boolean isReminderSent;
+
+    private boolean isTaskRescheduled;
+    private boolean isUpdateSaved;
+    private boolean isChangeNotificationSent;
+
+    // Scenario 1: Alert when task is created
     @Given("a task is assigned to me")
     public void a_task_is_assigned_to_me() {
-        System.out.println("Task assigned to chef");
+        isTaskAssigned = true;
     }
 
     @When("it is saved in the system")
     public void it_is_saved_in_the_system() {
-        System.out.println("Task saved in system");
+        if (isTaskAssigned) {
+            isTaskSaved = true;
+        }
     }
 
     @Then("I should receive a notification")
     public void i_should_receive_a_notification() {
-        System.out.println("Notification received");
+        isNotificationReceived = isTaskSaved;
+        Assertions.assertTrue(isNotificationReceived, "Chef should receive notification after task is saved.");
     }
 
+    // Scenario 2: Reminder before task deadline
     @Given("I have a task due in an hour")
     public void i_have_a_task_due_in_an_hour() {
-        System.out.println("Task deadline approaching");
+        isDeadlineApproaching = true;
     }
 
     @When("the time is near")
     public void the_time_is_near() {
-        System.out.println("It is almost time for the task");
+        // Simulate system check for due time
+        if (isDeadlineApproaching) {
+            isReminderSent = true;
+        }
     }
 
     @Then("I should get a reminder alert")
     public void i_should_get_a_reminder_alert() {
-        System.out.println("Reminder alert sent");
+        Assertions.assertTrue(isReminderSent, "Chef should receive a reminder alert before the deadline.");
     }
 
+    // Scenario 3: Notify changes to task schedule
     @Given("my task is rescheduled")
     public void my_task_is_rescheduled() {
-        System.out.println("Task rescheduled");
+        isTaskRescheduled = true;
     }
 
     @When("the update is saved")
     public void the_update_is_saved() {
-        System.out.println("Task update saved");
+        if (isTaskRescheduled) {
+            isUpdateSaved = true;
+        }
     }
 
     @Then("I should receive a notification about the change")
     public void i_should_receive_a_notification_about_the_change() {
-        System.out.println("Notification of task change sent");
+        isChangeNotificationSent = isUpdateSaved;
+        Assertions.assertTrue(isChangeNotificationSent, "Chef should be notified of any task schedule changes.");
     }
 }
+

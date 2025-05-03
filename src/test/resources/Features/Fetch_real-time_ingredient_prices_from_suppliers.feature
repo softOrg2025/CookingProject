@@ -1,4 +1,5 @@
 Feature: Fetch real-time ingredient prices from suppliers
+
   Scenario: View current prices from suppliers
     Given I am logged in as a manager
     When I open the supplier section

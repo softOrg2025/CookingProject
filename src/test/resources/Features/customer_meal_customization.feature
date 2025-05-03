@@ -1,5 +1,5 @@
 
-Feature: : Customer selects ingredients for custom meal                                                                                                          Feature: Customer selects ingredients for custom meal
+Feature:Customer selects ingredients for custom meal                                                                                                          Feature: Customer selects ingredients for custom meal
 
 Scenario: Customer selects ingredients
 Given the customer is logged into the system

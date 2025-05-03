@@ -10,7 +10,7 @@ Feature: Customer Dietary Preferences Access
     And I should see their food allergies clearly highlighted
 
   Scenario: Alert when preparing meal with allergen
-    Given I am preparing a seafood pasta dish
+    Given I am preparing a "seafood pasta" dish
     When I check the profile of customer "David Lee" who has a shellfish allergy
     Then the system should display a prominent warning
     And the system should suggest alternative ingredients to use

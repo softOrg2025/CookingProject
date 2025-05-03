@@ -5,16 +5,10 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
-
-
-
 public class TaskNotificationSteps {
     private kitchen_manager kitchenManager = new kitchen_manager();
     private chef chef     = new chef("John Doe", "john@example.com", "password123");
 private String taskName="prepare dinner";
-
-
-
 
     @Given("the kitchen manager has assigned a task")
     public void the_kitchen_manager_has_assigned_a_task() {
@@ -22,10 +16,6 @@ private String taskName="prepare dinner";
         kitchenManager.assignTask(taskName, chef);
 
     }
-
-
-
-
     @Then("the system should display the task notification")
     public void the_system_should_display_the_task_notification() {
         String task = chef.getSelectedTask();
@@ -70,8 +60,4 @@ private String taskName="prepare dinner";
             System.out.println("The task is not completed.");
         }
     }
-
-
-
-
 }
