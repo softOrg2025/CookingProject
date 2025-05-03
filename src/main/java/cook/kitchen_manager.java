@@ -5,26 +5,22 @@ import java.util.*;
 public class kitchen_manager extends User {
     private Map<String, String> taskDetails;
 
-    public kitchen_manager() {
-        taskDetails = new HashMap<>();
+    public kitchen_manager(String name, String email, String password) {
+        super(name, email, password, Role.manager);
+        this.taskDetails = new HashMap<>();
     }
 
-
-    public  void assignTask(String task, chef chef) {
-        String taskDescription = "This is the description of " + task;
-        String taskDeadline = "2025-04-03 6:00 PM";
-
-
-        taskDetails.put(task, taskDescription + " | Deadline: " + taskDeadline);
-
-
-        chef.receiveTask(task);
+    public void assignTask(String taskName, chef chef) {
+        String details = "Prepare " + taskName + " according to recipe standards";
+        String deadline = "Today by 6:00 PM";
+        taskDetails.put(taskName, "Description: " + details + " | Deadline: " + deadline);
+        chef.receiveTask(taskName);
+        System.out.println("Assigned task: " + taskName + " to chef " + chef.name);
     }
 
     public String getTaskDetails(String taskName) {
-        return taskDetails.get(taskName);
+        return taskDetails.getOrDefault(taskName, "No details available for: " + taskName);
     }
-
 
 
 
