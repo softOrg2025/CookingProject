@@ -4,91 +4,56 @@ import javax.swing.*;
 import java.util.*;
 
 public class chef extends User{
-    private String name;
-    private String email;
-    private String password;
-    private boolean isTaskCompleted;
-    private String assignedTask;
-    private List<String> tasks ;
-    private Map<String, String> taskDetails;
-    private boolean isTaskSelected;
-    private String selectedTask;
+    private List<String> tasks;
     private Map<String, Boolean> taskCompletionStatus;
+    private String selectedTask;
+    private kitchen_manager kitchenManager;
 
-
-
-    public chef(String name , String email , String password ){
-        super(name , email , password , Role.Chef);
-        this.isTaskCompleted = false;
+    public chef(String name, String email, String password, kitchen_manager kitchenManager) {
+        super(name, email, password, Role.Chef);
         this.tasks = new ArrayList<>();
-        this.taskDetails = new HashMap<>();
-        this.isTaskSelected=false;
         this.taskCompletionStatus = new HashMap<>();
+        this.kitchenManager = kitchenManager;
     }
 
-
-    public void approveSubstitution(Meal meal, String oldIngredient, String newIngredient) {
-        meal.substituteIngredient(oldIngredient, newIngredient);
-        System.out.println("Chef approved substitution for " + oldIngredient + " to " + newIngredient);
-    }
-
-
-    public void rejectSubstitution() {
-        System.out.println("Chef rejected substitution.");
-    }
-
-    public void receiveTask(String task) {
-        this.assignedTask = task;
-        this.isTaskCompleted = false;
-        tasks.add(task);
-        taskCompletionStatus.put(task, false);
-
-
-
+    public void receiveTask(String taskName) {
+        if (!tasks.contains(taskName)) {
+            tasks.add(taskName);
+            taskCompletionStatus.put(taskName, false);
+            System.out.println("Received new task: " + taskName);
+        }
     }
 
     public void selectTask(String taskName) {
         if (tasks.contains(taskName)) {
             selectedTask = taskName;
-            System.out.println("Chef selected the task: " + taskName);
+            System.out.println("Selected task: " + taskName);
         } else {
-            System.out.println("Task \"" + taskName + "\" not found.");
+            System.out.println("Task not found: " + taskName);
         }
     }
 
-    // Get the details of the selected task
-    public String getSelectedTaskDetails() {
+    public void completeTask() {
         if (selectedTask != null) {
-            return "Task Details: \n" +
-                    "Name: " + selectedTask + "\n" +
-                    "Details: " + taskDetails.get(selectedTask);
+            taskCompletionStatus.put(selectedTask, true);
+            System.out.println("Marked task as completed: " + selectedTask);
         } else {
-            return "No task selected.";
+            System.out.println("No task selected to complete");
         }
     }
 
-
-    public List<String> getTaskNames() {
-        return tasks;
+    public boolean isTaskCompleted(String taskName) {
+        return taskCompletionStatus.getOrDefault(taskName, false);
     }
-
 
     public String getSelectedTask() {
         return selectedTask;
     }
 
-
-    public void completeTask() {
-        if (selectedTask != null) {
-            taskCompletionStatus.put(selectedTask, true);
-            System.out.println("Task \"" + selectedTask + "\" has been marked as completed.");
-        } else {
-            System.out.println("No task selected to mark as completed.");
+    public String getTaskDetails(String taskName) {
+        if (kitchenManager != null) {
+            return kitchenManager.getTaskDetails(taskName);
         }
-    }
-
-
-    public boolean isTaskCompleted() {
-        return selectedTask != null && taskCompletionStatus.getOrDefault(selectedTask, false);
+        return "No task details available";
     }
 }
