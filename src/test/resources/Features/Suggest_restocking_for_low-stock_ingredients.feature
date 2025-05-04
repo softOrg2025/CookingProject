@@ -1,4 +1,5 @@
 Feature: Suggest restocking for low-stock ingredients
+
   Scenario: Notify when stock is low
     Given an ingredient is below the threshold
     When I view the inventory

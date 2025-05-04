@@ -1,7 +1,8 @@
 Feature: System generates automatic purchase orders
+
   Scenario: Create PO when critical low
     Given an ingredient reaches critical stock
-    When the system detects it
+    When the system detects a critical stock level
     Then a purchase order should be generated automatically
 
   Scenario: Include price and supplier info in PO
@@ -13,3 +14,4 @@ Feature: System generates automatic purchase orders
     Given the PO is ready
     When I approve it
     Then the system should send it to the respective supplier
+

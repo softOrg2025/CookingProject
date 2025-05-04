@@ -10,7 +10,7 @@ public class PurchaseOrderSteps {
     private boolean orderSent = false;
     private String orderStatus = "Pending";
 
-    // SCENARIO 1: Generate order for low stock
+
 
     @Given("an ingredient is running low in purchase order")
     public void anIngredientIsRunningLowInPurchaseOrder() {
@@ -47,7 +47,7 @@ public class PurchaseOrderSteps {
         Assertions.assertTrue(orderSent, "Supplier should receive the order");
     }
 
-    // SCENARIO 3: Track order status
+
 
     @Given("a purchase order has been sent")
     public void aPurchaseOrderHasBeenSent() {
@@ -66,7 +66,7 @@ public class PurchaseOrderSteps {
         Assertions.assertEquals("Shipped", orderStatus, "Order status should be updated to Shipped");
     }
 
-    // Optional Negative Cases (to ensure robustness)
+
 
     @Then("the system should not generate a purchase order")
     public void theSystemShouldNotGenerateAPurchaseOrder() {

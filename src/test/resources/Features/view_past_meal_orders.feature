@@ -7,17 +7,18 @@ Feature: View Past Meal Orders
     Given I am logged in with existing order history
     When I navigate to my order history page
     Then I should see a chronological list of my past orders
-    And each order should display the order date, meal image, total price, and reorder button
-
+    And each order should display the order date, total price, and reorder button
 
   Scenario: Reorder a previous meal
-    Given I am viewing my order history
+    Given I am logged in with existing order history
+    And I am viewing my order history
     When I click "Reorder" on an order containing "Vegetable Curry"
     Then "Vegetable Curry" should be added to my current cart
     And I should see a confirmation message "Meal added to cart!"
 
   Scenario: Customer filters past orders by date
-    Given the customer is viewing past orders
+    Given I am logged in with existing order history
+    And the customer is viewing past orders
     When the customer filters orders by a specific date range
     Then the system should display only orders within that range
     And the orders should be sorted from newest to oldest

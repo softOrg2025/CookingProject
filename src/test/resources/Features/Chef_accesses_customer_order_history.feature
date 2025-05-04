@@ -15,4 +15,3 @@ Feature: Chef accesses and uses customer order history
     When the chef notices a pattern in meal choices
     Then the chef should adjust future meal suggestions accordingly
 
-#    DONE
