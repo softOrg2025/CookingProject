@@ -27,7 +27,6 @@ public class chef extends User{
     public void selectTask(String taskName) {
         if (tasks.contains(taskName)) {
             selectedTask = taskName;
-            System.out.println("Selected task: " + taskName);
         } else {
             System.out.println("Task not found: " + taskName);
         }

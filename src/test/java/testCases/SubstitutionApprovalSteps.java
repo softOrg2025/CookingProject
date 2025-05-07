@@ -88,9 +88,4 @@ public class SubstitutionApprovalSteps {
             System.out.println(customerNotification);
         }
     }
-
-
-
-
-
 }

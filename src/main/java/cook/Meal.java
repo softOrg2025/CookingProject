@@ -4,7 +4,7 @@ package cook;
 import java.util.*;
 
 public class Meal {
-    private List<String> ingredients = new ArrayList<String>();
+    private List<String> ingredients;
     private char size;
     private double price;
     private String name;
@@ -15,11 +15,13 @@ public class Meal {
         incompatibleCombinations.add(Arrays.asList("Fish", "Cheese"));
     }
 
+    // في كلاس Meal
+    public void setName(String name) { this.name = name; }
 
 
 
     public Meal(List<String> ingredients, char size, double price) {
-        this.ingredients = ingredients;
+        this.ingredients = new ArrayList<>(ingredients); // التعديل هنا
         this.size = size;
         this.price = price;
     }
