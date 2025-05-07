@@ -4,10 +4,12 @@ package cook;
 import java.util.*;
 
 public class Meal {
-    private List<String> ingredients = new ArrayList<String>();
+    private List<String> ingredients ;
+    private Map<String, Integer> ingredientQuantities;
     private char size;
     private double price;
     private String name;
+
     private static final Set<List<String>> incompatibleCombinations = new HashSet<>();
 
     static {
@@ -22,6 +24,12 @@ public class Meal {
         this.ingredients = ingredients;
         this.size = size;
         this.price = price;
+        this.ingredientQuantities = new HashMap<>();
+        // Default quantity of 1 for each ingredient
+        ingredients.forEach(ing -> ingredientQuantities.put(ing, 1));
+    }
+    public Map<String, Integer> getIngredientQuantities() {
+        return Collections.unmodifiableMap(ingredientQuantities);
     }
 
     public List<String> getIngredients() {
