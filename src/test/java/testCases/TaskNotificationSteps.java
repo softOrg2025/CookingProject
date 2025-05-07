@@ -1,12 +1,18 @@
 package testCases;
+import cook.Ingredients;
+import cook.InventoryService;
 import cook.chef;
 import cook.kitchen_manager;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
+import java.util.List;
+
 public class TaskNotificationSteps {
-    private kitchen_manager kitchenManager = new kitchen_manager("Manager", "manager@restaurant.com", "password123");
+    InventoryService inventoryService = new InventoryService();
+
+    private kitchen_manager kitchenManager = new kitchen_manager("Manager", "manager@restaurant.com", "password123",inventoryService);
     private chef chef = new chef("John Doe", "john.com", "password123", kitchenManager);
     private String taskName = "Prepare Dinner";
 
