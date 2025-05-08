@@ -36,17 +36,16 @@ public class Main {
     }
 
     private static void initializeTestData() {
-        // Create users
+
         manager = new kitchen_manager("Ali Manager", "manager@cook.com", "manager123");
         testChef = new chef("Mohamed Chef", "chef@cook.com", "chef123", manager);
         testCustomer = new Customer("Ahmed Customer", "customer@cook.com", "customer123");
 
-        // Add to application users
         Application.users.add(manager);
         Application.users.add(testChef);
         Application.users.add(testCustomer);
 
-        // Create sample meals
+
         Meal pasta = new Meal(Arrays.asList("Pasta", "Tomato Sauce", "Cheese"), 'M', 12.99);
         pasta.setName("Pasta Carbonara");
 
@@ -60,7 +59,7 @@ public class Main {
         Application.meals.add(salad);
         Application.meals.add(dessert);
 
-        // Set customer preferences and allergies
+
         testCustomer.savePreferences("Vegetarian");
         testCustomer.saveAllergy("Milk");
     }
@@ -101,25 +100,22 @@ public class Main {
     private static void testCustomerFunctionality() {
         System.out.println("\n=== CUSTOMER FUNCTIONALITY TEST ===");
 
-        // Test preferences
+
         System.out.println("\nTesting preferences system...");
         boolean prefAdded = testCustomer.savePreferences("Spicy Food");
         System.out.println("Added 'Spicy Food' preference: " + (prefAdded ? "Success" : "Already exists"));
 
-        // Test allergies
         System.out.println("\nTesting allergy system...");
         boolean allergyAdded = testCustomer.saveAllergy("Peanuts");
         System.out.println("Added 'Peanuts' allergy: " + (allergyAdded ? "Success" : "Already exists"));
         System.out.println("Check if 'Milk' allergy exists: " + testCustomer.allergyExist("Milk"));
 
-        // Test custom meal creation
         System.out.println("\nTesting custom meal creation...");
         testCustomer.selectIngredient("Pasta");
         testCustomer.selectIngredient("Tomato Sauce");
         boolean mealSaved = testCustomer.saveCustomMeal('M', 10.99);
         System.out.println("Custom meal saved: " + (mealSaved ? "Success" : "Failed (incompatible ingredients)"));
 
-        // Try with incompatible ingredients
         testCustomer.selectIngredient("Milk");
         testCustomer.selectIngredient("Lemon");
         mealSaved = testCustomer.saveCustomMeal('S', 5.99);
@@ -129,11 +125,9 @@ public class Main {
     private static void testChefFunctionality() {
         System.out.println("\n=== CHEF FUNCTIONALITY TEST ===");
 
-        // 1. تعيين المهام أولاً
         manager.assignTask("Prepare Pasta", testChef);
         manager.assignTask("Make Salad", testChef);
 
-        // 2. اختبار اختيار وإكمال مهمة "Prepare Pasta"
         System.out.println("\nTesting Pasta Task Workflow:");
         testChef.selectTask("Prepare Pasta");
         System.out.println("Selected: " + testChef.getSelectedTask());
@@ -142,7 +136,6 @@ public class Main {
         testChef.completeTask();
         System.out.println("Completion Status: " + testChef.isTaskCompleted("Prepare Pasta"));
 
-        // 3. اختبار اختيار وإكمال مهمة "Make Salad"
         System.out.println("\nTesting Salad Task Workflow:");
         testChef.selectTask("Make Salad");
         System.out.println("Selected: " + testChef.getSelectedTask());
@@ -151,7 +144,6 @@ public class Main {
         testChef.completeTask();
         System.out.println("Completion Status: " + testChef.isTaskCompleted("Make Salad"));
 
-        // 4. عرض ملخص
         System.out.println("\nTask Summary:");
         System.out.println("- Prepare Pasta completed: " + testChef.isTaskCompleted("Prepare Pasta"));
         System.out.println("- Make Salad completed: " + testChef.isTaskCompleted("Make Salad"));
@@ -160,12 +152,10 @@ public class Main {
     private static void testManagerFunctionality() {
         System.out.println("\n=== MANAGER FUNCTIONALITY TEST ===");
 
-        // Test task assignment
         System.out.println("\nTesting task assignment...");
         manager.assignTask("Bake Cake", testChef);
         System.out.println("Task 'Bake Cake' assigned to chef.");
 
-        // Test task details
         System.out.println("\nTesting task details retrieval...");
         System.out.println("Details for 'Bake Cake': " + manager.getTaskDetails("Bake Cake"));
     }
@@ -173,19 +163,16 @@ public class Main {
     private static void testMealManagement() {
         System.out.println("\n=== MEAL MANAGEMENT TEST ===");
 
-        // Test incompatible ingredients
         System.out.println("\nTesting incompatible ingredients...");
         Meal testMeal = new Meal(Arrays.asList("Milk", "Lemon"), 'M', 9.99);
         testMeal.setName("Test Meal");
         System.out.println("Meal has incompatible ingredients: " + testMeal.hasIncompatibleIngredients());
 
-        // Test ingredient substitution
         System.out.println("\nTesting ingredient substitution...");
         boolean subResult = testMeal.substituteIngredient("Milk", "Almond Milk");
         System.out.println("Substitution result: " + (subResult ? "Success" : "Failed"));
         System.out.println("Meal now has incompatible ingredients: " + testMeal.hasIncompatibleIngredients());
 
-        // Test saving meals
         System.out.println("\nTesting meal saving...");
         Application.saveMeal(testMeal);
     }
@@ -193,11 +180,9 @@ public class Main {
     private static void testAllergySystem() {
         System.out.println("\n=== ALLERGY SYSTEM TEST ===");
 
-        // Get customer allergies
         List<String> allergies = testCustomer.getAllergies();
         System.out.println("Customer allergies: " + allergies);
 
-        // Test meal exclusion
         System.out.println("\nTesting meal exclusion based on allergies...");
         List<Meal> safeMeals = Application.exclude(allergies);
         System.out.println("Safe meals for customer:");
@@ -205,7 +190,6 @@ public class Main {
             System.out.println("- " + meal.getName());
         }
 
-        // Test alternative suggestions
         System.out.println("\nTesting alternative ingredient suggestions...");
         List<String> alternatives = Meal.suggestAlternative("Milk");
         System.out.println("Alternatives for Milk: " + alternatives);
@@ -214,12 +198,10 @@ public class Main {
     private static void testLoginSystem() {
         System.out.println("\n=== LOGIN SYSTEM TEST ===");
 
-        // Test successful login
         System.out.println("\nTesting successful login...");
         User loggedInUser = Application.login("customer@cook.com", "customer123");
         System.out.println("Login result: " + (loggedInUser != null ? "Success (" + loggedInUser.getRole() + ")" : "Failed"));
 
-        // Test failed login
         System.out.println("\nTesting failed login...");
         loggedInUser = Application.login("wrong@email.com", "wrongpass");
         System.out.println("Login result: " + (loggedInUser != null ? "Success" : "Failed (as expected)"));
