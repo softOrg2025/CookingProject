@@ -3,6 +3,10 @@ package testCases;
 import io.cucumber.java.en.*;
 import org.junit.jupiter.api.Assertions;
 
+import static cook.Application.users;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import cook.*;
 
 public class ChefOrderHistorySteps {
     private boolean isChefLoggedIn;
@@ -10,11 +14,17 @@ public class ChefOrderHistorySteps {
     private boolean isOrderHistoryDisplayed;
     private boolean isMealPlanSuggested;
     private boolean isPreferencesIdentified;
-
+    User user;
+    public ChefOrderHistorySteps(){
+        user = new User("s","s.com","123",Role.Chef);
+    }
     @Given("the chef is logged into the system")
     public void theChefIsLoggedIntoTheSystem() {
-        isChefLoggedIn = true;
-        Assertions.assertTrue(isChefLoggedIn, "Chef should be logged in.");
+        users.add(user);
+        user=Application.login(user.getEmail(),user.getPassword());
+        assertNotNull(user);
+        assertTrue(user.getEmail().equals("s.com"));
+
     }
 
     @When("the chef selects a customer profile")
