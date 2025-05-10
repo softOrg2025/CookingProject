@@ -35,7 +35,7 @@ public class kitchen_manager extends User {
     }
 
     // Staff Management Methods
-    public void addChef(chef newChef) {
+    /*public void addChef(chef newChef) {
         kitchenStaff.add(newChef);
         System.out.println("Added new chef: " + newChef.name);
     }
@@ -105,7 +105,7 @@ public class kitchen_manager extends User {
                 }
             }
         });
-    }
+    }*/
 
 
 

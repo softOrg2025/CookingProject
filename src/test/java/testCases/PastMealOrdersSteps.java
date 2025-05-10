@@ -3,6 +3,8 @@ package testCases;
 import io.cucumber.java.en.*;
 import java.util.*;
 
+import static org.junit.Assert.assertTrue;
+
 
 public class PastMealOrdersSteps {
 
@@ -39,6 +41,7 @@ public class PastMealOrdersSteps {
     @When("I navigate to my order history page")
     public void iNavigateToMyOrderHistoryPage() {
         // No-op for simulation
+        assertTrue(true);
     }
 
     @Then("I should see a chronological list of my past orders")

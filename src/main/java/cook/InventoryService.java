@@ -60,8 +60,8 @@ public class InventoryService {
         return item != null ? item.getQuantity() : 0;
     }
 
-    public boolean isInStock(String ingredientName, int requiredAmount) {
+    /*public boolean isInStock(String ingredientName, int requiredAmount) {
         InventoryItem item = inventory.get(ingredientName);
         return item != null && item.getQuantity() >= requiredAmount;
-    }
+    }*/
 }

@@ -3,17 +3,20 @@ package testCases;
 import cook.Application;
 import cook.Customer;
 import cook.Meal; // استيراد الكلاس Meal
+
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
+
+
 import java.util.ArrayList;
+
 import java.util.List;
 import static cook.Application.users;
 import static org.junit.Assert.*;
 
 public class DietaryPreferencesTest {
-    private String dietaryPreference; // إما استخدمه أو احذفه
-    private String errorMessage;     // إما استخدمه أو احذفه
+
     private String option;
     private String confirmationMessage;
     String allergy = "Peanuts";
