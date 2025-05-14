@@ -60,8 +60,45 @@ public class InventoryService {
         return item != null ? item.getQuantity() : 0;
     }
 
-    /*public boolean isInStock(String ingredientName, int requiredAmount) {
-        InventoryItem item = inventory.get(ingredientName);
-        return item != null && item.getQuantity() >= requiredAmount;
-    }*/
+
+    private Map<String, PurchaseOrder> generatedPurchaseOrders = new HashMap<>(); // لتخزين أوامر الشراء التي تم إنشاؤها
+
+    // دالة جديدة لإنشاء وحفظ أمر شراء
+    public PurchaseOrder createPurchaseOrderForCriticalStock(String ingredientName, int quantityToOrder, String supplierName, double price) {
+        // في الواقع، قد يكون هناك منطق أكثر تعقيدًا لتحديد المورد والسعر
+        PurchaseOrder po = new PurchaseOrder(ingredientName, quantityToOrder, supplierName, price);
+        generatedPurchaseOrders.put(po.getOrderId(), po);
+        System.out.println("Purchase order created: " + po.getOrderId() + " for " + ingredientName);
+        return po;
+    }
+
+    public PurchaseOrder getPurchaseOrderDetails(String orderId) {
+        return generatedPurchaseOrders.get(orderId);
+    }
+
+    public boolean sendPurchaseOrderToSupplier(String orderId) {
+        PurchaseOrder po = generatedPurchaseOrders.get(orderId);
+        if (po != null) {
+            // منطق إرسال أمر الشراء إلى المورد
+            // مثلاً: EmailService.sendEmail(po.getSupplierEmail(), "New PO: " + po.getOrderId(), po.toString());
+            System.out.println("Purchase order " + po.getOrderId() + " sent to supplier " + po.getSupplierName());
+            return true;
+        }
+        return false;
+
+    }
+    public PurchaseOrder getPurchaseOrderByIngredientName(String ingredientName) {
+        if (ingredientName == null) {
+            System.err.println("Attempting to find PO with null ingredient name.");
+            return null;
+        }
+
+        for (PurchaseOrder po : generatedPurchaseOrders.values()) {
+            if (ingredientName.equals(po.getIngredientName())) {
+                return po;
+            }
+        }
+        System.err.println("No PurchaseOrder found for ingredient name: " + ingredientName);
+        return null;}
+
 }
