@@ -5,10 +5,15 @@ Feature: System generates automatic purchase orders
     When the system detects a critical stock level
     Then a purchase order should be generated automatically
 
-  Scenario: Include price and supplier info in PO
-    Given a PO is created
-    When I view the details
-    Then it should include ingredient name, quantity, supplier, and price
+  Scenario: Verify details for a known Purchase Order
+    Given a purchase order for "PremiumCoffee" has been created with quantity 75, supplier "Beans R Us", and unit price 12.50
+    When I view the details for the "PremiumCoffee" purchase order
+    Then the purchase order details should show:
+      | Field          | Value              |
+      | IngredientName | PremiumCoffee      |
+      | Quantity       | 75                 |
+      | SupplierName   | Beans R Us         |
+      | UnitPrice      | 12.50              |
 
   Scenario: Send PO to supplier
     Given the PO is ready
