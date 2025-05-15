@@ -40,7 +40,6 @@ public class Customer extends User {
     }
 
 
-
     public void selectIngredient(String ingredient) {
         selectedIngredients.add(ingredient);
     }
@@ -62,16 +61,6 @@ public class Customer extends User {
         }
         return false;
     }
-
-    public Meal getSavedMeal() {
-        return savedMeals.get(getEmail());
-    }
-
-
-
-
-
-
 
 
 }

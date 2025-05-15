@@ -27,9 +27,6 @@ public class InventoryItem {
         return threshold;
     }
 
-    public double getUnitPrice() {
-        return unitPrice;
-    }
 
     public boolean isLowStock() {
         return quantity < threshold;

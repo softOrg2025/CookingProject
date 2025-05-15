@@ -49,7 +49,7 @@ public class TaskNotificationSteps {
 
     @Then("the system should display the task details")
     public void the_system_should_display_the_task_details() {
-    System.out.println(chef.getTaskDetails(taskName));
+        System.out.println(chef.getTaskDetails(taskName));
     }
 
     @Given("the chef has completed a task")

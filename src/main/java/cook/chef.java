@@ -1,6 +1,6 @@
 package cook;
 
-import javax.swing.*;
+
 import java.util.*;
 
 public class chef extends User{
@@ -32,16 +32,6 @@ public class chef extends User{
         notifications.add(message);
         System.out.println("Chef " + name + " received notification: " + message);
     }
-
-    public List<String> getNotifications() {
-        return Collections.unmodifiableList(notifications);
-    }
-
-    public void clearNotifications() {
-        notifications.clear();
-    }
-
-
 
     public void selectTask(String taskName) {
         if (tasks.contains(taskName)) {

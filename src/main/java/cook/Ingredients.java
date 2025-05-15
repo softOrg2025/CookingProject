@@ -13,7 +13,7 @@ public class Ingredients {
         this.price = price;
     }
 
-    // Getters and setters
+
     public String getName() { return name; }
     public int getQuantity() { return quantity; }
     public int getThreshold() { return threshold; }

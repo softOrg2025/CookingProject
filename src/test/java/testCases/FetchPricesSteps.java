@@ -72,14 +72,14 @@ public class FetchPricesSteps {
     }
 
     @Given("I need to restock an item")
-public void iNeedToRestockAnItem() {
-    LOGGER.info("📥 Restock request initiated: Olive Oil.");
-    suppliers = Arrays.asList(
-        new Supplier("Supplier A", 10.0),
-        new Supplier("Supplier B", 9.5),
-        new Supplier("Supplier C", 10.5)
-    );
-}
+    public void iNeedToRestockAnItem() {
+        LOGGER.info("📥 Restock request initiated: Olive Oil.");
+        suppliers = Arrays.asList(
+                new Supplier("Supplier A", 10.0),
+                new Supplier("Supplier B", 9.5),
+                new Supplier("Supplier C", 10.5)
+        );
+    }
 
     @When("I compare prices")
     public void iComparePrices() {
