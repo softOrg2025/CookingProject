@@ -9,6 +9,7 @@ public class Application {
     public static List<Meal> meals = new ArrayList<Meal>();
     public Application (){
 
+
     }
 
     public static User login(String string, String pass) {

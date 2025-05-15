@@ -62,6 +62,9 @@ public class Customer extends User {
         return false;
     }
 
+    public List<String> getPreferences() {
+        return Collections.unmodifiableList(preferences); //  إعادة نسخة غير قابلة للتعديل للحماية
+    }
 
 }
 

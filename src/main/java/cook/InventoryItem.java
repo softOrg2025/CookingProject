@@ -6,7 +6,7 @@ public class InventoryItem {
     private int threshold;
     private double unitPrice;
 
-    // Constructor
+
     public InventoryItem(String ingredientName, int quantity, int threshold, double unitPrice) {
         this.ingredientName = ingredientName;
         this.quantity = quantity;
@@ -14,7 +14,7 @@ public class InventoryItem {
         this.unitPrice = unitPrice;
     }
 
-    // Getters
+
     public String getIngredientName() {
         return ingredientName;
     }
@@ -28,16 +28,24 @@ public class InventoryItem {
     }
 
 
+    public double getUnitPrice() {
+        return this.unitPrice;
+    }
+
+
     public boolean isLowStock() {
-        return quantity < threshold;
+
+        return quantity <= threshold;
     }
 
     public void use(int amount) {
         if (amount > quantity) {
-            throw new IllegalArgumentException("Not enough stock");
+            throw new IllegalArgumentException("Not enough stock for " + ingredientName + ". Requested: " + amount + ", Available: " + quantity);
         }
         quantity -= amount;
     }
 
-
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
 }

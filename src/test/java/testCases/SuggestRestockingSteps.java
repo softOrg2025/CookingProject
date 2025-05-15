@@ -11,16 +11,13 @@ import io.cucumber.java.en.Then;
 
 import java.util.List;
 import java.util.Map;
-// افترض أن هذه الكلاسات موجودة في حزمة ما، على سبيل المثال com.example.system
-// import com.example.system.InventoryService;
-// import com.example.system.InventoryItem;
 
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SuggestRestockingSteps {
 
-    // استخدام خدمة المخزون الخارجية
+
     private InventoryService inventoryService = new InventoryService();
     private List<InventoryItem> lowStockItems;
     private Map<String, Integer> restockSuggestions;

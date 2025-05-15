@@ -14,15 +14,14 @@ public class PurchaseOrdersSteps {
 
     private final InventoryService inventoryService = new InventoryService();
     private InventoryItem criticalStockItem;
-    private PurchaseOrder currentPurchaseOrder; //  سيتم تعيينه بواسطة step definitions للسيناريو الثاني
+    private PurchaseOrder currentPurchaseOrder;
     private boolean poSentSuccessfully;
 
-    // قيم افتراضية للاختبار
     private static final String DEFAULT_SUPPLIER_NAME = "Default Supplier Inc.";
     private static final double DEFAULT_PRICE_PER_UNIT = 1.50;
     private static final int DEFAULT_REORDER_QUANTITY = 50;
 
-    // --- السيناريو الأول (يبقى كما هو) ---
+
     @Given("an ingredient reaches critical stock")
     public void an_ingredient_reaches_critical_stock() {
         criticalStockItem = new InventoryItem("CriticalPepper", 0, 1, DEFAULT_PRICE_PER_UNIT);
@@ -48,16 +47,11 @@ public class PurchaseOrdersSteps {
     }
 
 
-    // --- بداية تعديلات السيناريو الثاني ---
-    //  تم تعديل هذه الخطوة لتتناسب مع ملف .feature الجديد
     @Given("a purchase order for {string} has been created with quantity {int}, supplier {string}, and unit price {double}")
     public void a_purchase_order_for_ingredient_has_been_created(String ingredientName, int quantity, String supplierName, double unitPrice) {
-        //  نضيف المكون إلى المخزون أولاً (اختياري، لكنه جيد للمحاكاة)
-        //  الكمية الأولية والحد الأدنى هنا مجرد أمثلة
+
         inventoryService.addInventoryItem(new InventoryItem(ingredientName, quantity / 2, quantity * 2, unitPrice));
 
-        //  إنشاء أمر الشراء وتخزينه مؤقتًا إذا لزم الأمر، أو الاعتماد على جلبه في خطوة @When
-        //  سنفترض أننا سنقوم بجلبه في خطوة @When بناءً على اسم المكون
         PurchaseOrder createdPO = inventoryService.createPurchaseOrderForCriticalStock(
                 ingredientName,
                 quantity,
@@ -66,21 +60,17 @@ public class PurchaseOrdersSteps {
         );
         assertNotNull(createdPO, "Failed to create PO in Given step for ingredient: " + ingredientName);
         System.out.println("DEBUG @Given (Scenario 2): Created PO for " + ingredientName + " with ID: " + createdPO.getOrderId());
-        //  لا نحتاج بالضرورة لتخزين createdPO في this.currentPurchaseOrder هنا،
-        //  لأن خطوة @When ستقوم بجلبه. ولكن إذا كان هذا يبسط الأمر، يمكنك ذلك.
+
     }
 
-    //  تم تعديل هذه الخطوة لتتناسب مع ملف .feature الجديد
     @When("I view the details for the {string} purchase order")
     public void i_view_the_details_for_the_purchase_order(String ingredientNameForLookup) {
-        //  نفترض أن InventoryService لديه دالة لجلب أمر شراء بناءً على اسم المكون
-        //  (أو أي معرّف آخر فريد إذا كان اسم المكون غير كافٍ لضمان التفرد)
+
         this.currentPurchaseOrder = inventoryService.getPurchaseOrderByIngredientName(ingredientNameForLookup); //  ستحتاج لإضافة هذه الدالة إلى InventoryService
         assertNotNull(this.currentPurchaseOrder, "Could not find Purchase Order for ingredient: " + ingredientNameForLookup);
         System.out.println("DEBUG @When (Scenario 2): Retrieved PO for " + ingredientNameForLookup + " with ID: " + (this.currentPurchaseOrder != null ? this.currentPurchaseOrder.getOrderId() : "null"));
     }
 
-    //  تم تعديل هذه الخطوة لتتناسب مع ملف .feature الجديد واستخدام DataTable
     @Then("the purchase order details should show:")
     public void the_purchase_order_details_should_show(DataTable expectedDetailsTable) {
         assertNotNull(this.currentPurchaseOrder, "Cannot verify details, currentPurchaseOrder is null.");
@@ -111,14 +101,12 @@ public class PurchaseOrdersSteps {
         assertEquals(expectedTotalPriceCalculated, this.currentPurchaseOrder.getTotalPrice(), delta, "PO TotalPrice mismatch based on calculation.");
         System.out.println("  Verified Calculated TotalPrice: " + expectedTotalPriceCalculated + " == " + this.currentPurchaseOrder.getTotalPrice());
     }
-    // --- نهاية تعديلات السيناريو الثاني ---
+
 
 
     @Given("the PO is ready")
     public void the_po_is_ready() {
-        //  قد تحتاج هذه الخطوة إلى تعديل طفيف لضمان أن currentPurchaseOrder تم تعيينه
-        //  إذا كان السيناريو الثالث يعتمد على أمر شراء تم إنشاؤه/جلبه في السيناريو الثاني.
-        //  للاستقلالية، من الأفضل أن تنشئ خطوة @Given هذه أمر شراء خاص بها إذا لم يكن موجودًا.
+
         if (this.currentPurchaseOrder == null) {
             System.out.println("DEBUG @Given (Scenario 3): currentPurchaseOrder is null, creating a new one.");
             String ingredientForPO = "ReadySugar";

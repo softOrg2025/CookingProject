@@ -6,22 +6,26 @@ public class User {
     protected String password;
     protected Role role;
 
-
-
-
-
-    public User(String name , String email , String pass , Role role){
+    public User(String name, String email, String pass, Role role) {
         this.name = name;
         this.email = email;
-        password = pass;
+        this.password = pass; // تم تعديل اسم المتغير هنا ليتطابق مع الاستخدام
         this.role = role;
     }
 
-    public User(){
-        this.name = "name";
+    public User() {
+        this.name = "name"; //  من الأفضل تهيئة كل الحقول
         this.email = "email";
-        password = "pass";
+        this.password = "pass"; //  وكذلك هذا
+        this.role = Role.Customer; //  أو أي دور افتراضي
     }
+
+    // --- هذا هو الميثود المطلوب ---
+    public String getName() {
+        return name;
+    }
+    // -----------------------------
+
     public String getEmail() {
         return email;
     }
@@ -33,8 +37,4 @@ public class User {
     public Role getRole() {
         return role;
     }
-
-
-
-
 }

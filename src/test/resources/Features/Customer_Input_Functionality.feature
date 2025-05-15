@@ -21,4 +21,4 @@ Feature: Allow customers to create custom meal requests
   Scenario: System prevents incompatible meal suggestions
     Given the customer has "Peanuts" listed as an allergy
     When the system suggests meals
-    Then the system should exclude any meals containing peanut
+    Then the system should exclude any meals containing "Peanuts"
