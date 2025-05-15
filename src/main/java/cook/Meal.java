@@ -35,9 +35,9 @@ public class Meal {
         return ingredients;
     }
 
-    public char getSize() {
+    /*public char getSize() {
         return size;
-    }
+    }*/
 
     public double getPrice() {
         return price;

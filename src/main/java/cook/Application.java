@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Application {
     public static List<User> users = new ArrayList<User>();
-    private static User currentUser = new User();
+    public static User currentUser = new User();
     public static List<Meal> meals = new ArrayList<Meal>();
     public Application (){
 

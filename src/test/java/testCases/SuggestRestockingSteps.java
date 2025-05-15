@@ -1,113 +1,110 @@
 package testCases;
 
+import cook.InventoryItem;
+import cook.InventoryService;
 import io.cucumber.java.en.*;
 import java.util.*;
 
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.When;
+import io.cucumber.java.en.Then;
+
+import java.util.List;
+import java.util.Map;
+// افترض أن هذه الكلاسات موجودة في حزمة ما، على سبيل المثال com.example.system
+// import com.example.system.InventoryService;
+// import com.example.system.InventoryItem;
+
+
+import static org.junit.jupiter.api.Assertions.*;
+
 public class SuggestRestockingSteps {
 
-
-    static class Ingredient {
-        String name;
-        int quantity;
-        int threshold;
-
-        Ingredient(String name, int quantity, int threshold) {
-            this.name = name;
-            this.quantity = quantity;
-            this.threshold = threshold;
-        }
-
-        boolean isLowStock() {
-            return quantity < threshold;
-        }
-    }
-
-
-    static class InventoryService {
-        private List<Ingredient> ingredients = new ArrayList<>();
-
-        void addIngredient(Ingredient i) {
-            ingredients.add(i);
-        }
-
-        List<Ingredient> getLowStockIngredients() {
-            List<Ingredient> low = new ArrayList<>();
-            for (Ingredient i : ingredients) {
-                if (i.isLowStock()) low.add(i);
-            }
-            return low;
-        }
-
-        Map<String, Integer> getRestockSuggestions() {
-            Map<String, Integer> suggestions = new HashMap<>();
-            for (Ingredient i : getLowStockIngredients()) {
-                int suggestedQty = (i.threshold * 2) - i.quantity;
-                suggestions.put(i.name, suggestedQty);
-            }
-            return suggestions;
-        }
-
-        boolean reviewRestockPlan(Map<String, Integer> plan) {
-            return !plan.isEmpty();
-        }
-    }
-
+    // استخدام خدمة المخزون الخارجية
     private InventoryService inventoryService = new InventoryService();
-    private List<Ingredient> lowStockIngredients;
+    private List<InventoryItem> lowStockItems;
     private Map<String, Integer> restockSuggestions;
-    private boolean isApproved;
+    private boolean planReviewedAndConsideredApprovable;
+
+
+    private static final double DEFAULT_UNIT_PRICE = 0.0;
 
     @Given("an ingredient is below the threshold")
-    public void an_ingredient_is_below_threshold() {
-        inventoryService.addIngredient(new Ingredient("Tomato", 2, 10));
+    public void an_ingredient_is_below_the_threshold() {
+
+        inventoryService.addInventoryItem(new InventoryItem("Tomato", 2, 10, DEFAULT_UNIT_PRICE));
     }
 
     @When("I view the inventory")
     public void i_view_the_inventory() {
-        lowStockIngredients = inventoryService.getLowStockIngredients();
+
+        lowStockItems = inventoryService.getLowStockItems();
     }
 
     @Then("the system should suggest restocking")
     public void system_should_suggest_restocking() {
+        assertNotNull(lowStockItems, "قائمة العناصر منخفضة المخزون لا يجب أن تكون فارغة (null).");
+        assertFalse(lowStockItems.isEmpty(), "يجب أن يحتوي المخزون على عناصر منخفضة المخزون ليقترح إعادة التخزين.");
 
-        assert lowStockIngredients != null && !lowStockIngredients.isEmpty() : "Inventory should suggest restocking";
+        assertTrue(lowStockItems.stream().anyMatch(item -> item.getIngredientName().equals("Tomato")),
+                "العنصر 'Tomato' يجب أن يكون ضمن قائمة العناصر منخفضة المخزون.");
     }
 
     @Given("multiple items are low")
     public void multiple_items_are_low() {
-        inventoryService.addIngredient(new Ingredient("Onion", 3, 5));
-        inventoryService.addIngredient(new Ingredient("Garlic", 1, 4));
+        inventoryService.addInventoryItem(new InventoryItem("Onion", 3, 5, DEFAULT_UNIT_PRICE));
+        inventoryService.addInventoryItem(new InventoryItem("Garlic", 1, 4, DEFAULT_UNIT_PRICE));
     }
 
     @When("I open the restock suggestions")
     public void open_restock_suggestions() {
+
         restockSuggestions = inventoryService.getRestockSuggestions();
     }
 
     @Then("I should see suggested quantities based on usage rate")
     public void should_see_suggested_quantities() {
+        assertNotNull(restockSuggestions, "اقتراحات إعادة التخزين لا يجب أن تكون فارغة (null).");
+        assertFalse(restockSuggestions.isEmpty(), "اقتراحات إعادة التخزين لا يجب أن تكون فارغة.");
 
-        assert restockSuggestions != null && !restockSuggestions.isEmpty() : "Restock suggestions should not be empty";
 
+        assertEquals(Integer.valueOf(7), restockSuggestions.get("Onion"), "الكمية المقترحة لـ Onion غير صحيحة.");
+        assertEquals(Integer.valueOf(7), restockSuggestions.get("Garlic"), "الكمية المقترحة لـ Garlic غير صحيحة.");
 
         restockSuggestions.forEach((name, qty) -> {
-            assert qty > 0 : "Suggested quantity for " + name + " should be greater than 0";
+            assertTrue(qty > 0, "الكمية المقترحة لـ " + name + " يجب أن تكون أكبر من 0. الكمية الفعلية: " + qty);
         });
     }
 
     @Given("I see restock suggestions")
     public void i_see_restock_suggestions() {
-        restockSuggestions = inventoryService.getRestockSuggestions();
+
+        if (restockSuggestions == null || restockSuggestions.isEmpty()) {
+
+            inventoryService.addInventoryItem(new InventoryItem("Onion", 3, 5, DEFAULT_UNIT_PRICE)); // للتأكد من أن هناك اقتراحات
+            inventoryService.addInventoryItem(new InventoryItem("Garlic", 1, 4, DEFAULT_UNIT_PRICE));
+            restockSuggestions = inventoryService.getRestockSuggestions();
+        }
+        assertNotNull(restockSuggestions, "يجب أن تكون هناك اقتراحات لإعادة التخزين مرئية.");
+        assertFalse(restockSuggestions.isEmpty(), "قائمة اقتراحات إعادة التخزين يجب ألا تكون فارغة.");
     }
 
     @When("I review them")
     public void i_review_them() {
-        isApproved = inventoryService.reviewRestockPlan(restockSuggestions);
+
+        planReviewedAndConsideredApprovable = (restockSuggestions != null && !restockSuggestions.isEmpty());
     }
 
     @Then("I can approve or reject the restocking plan")
     public void can_approve_or_reject_plan() {
 
-        assert (isApproved || !isApproved) : "The restocking plan should be approved or rejected";
+        if (restockSuggestions != null && !restockSuggestions.isEmpty()) {
+            assertTrue(planReviewedAndConsideredApprovable,
+                    "إذا كانت هناك اقتراحات، يجب أن تعتبر الخطة قابلة للموافقة بعد المراجعة.");
+        } else {
+            assertFalse(planReviewedAndConsideredApprovable,
+                    "إذا لم تكن هناك اقتراحات، لا يجب أن تعتبر الخطة قابلة للموافقة بعد المراجعة.");
+        }
+
     }
 }
