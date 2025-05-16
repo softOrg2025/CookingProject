@@ -3,6 +3,7 @@ package testCases;
 import io.cucumber.java.en.*;
 import java.util.*;
 import java.util.logging.Logger;
+import cook.Supplier; // Import the new Supplier class
 
 public class FetchPricesSteps {
 
@@ -11,25 +12,12 @@ public class FetchPricesSteps {
     private List<Supplier> suppliers;
     private Supplier selectedSupplier;
 
-    // Class to represent supplier information
-    static class Supplier {
-        String name;
-        double price;
 
-        Supplier(String name, double price) {
-            this.name = name;
-            this.price = price;
-        }
-
-        @Override
-        public String toString() {
-            return name + ": $" + price;
-        }
-    }
 
     @Given("I am logged in as a manager")
     public void iAmLoggedInAsManager() {
         LOGGER.info("✅ Manager successfully logged in.");
+
     }
 
     @When("I open the supplier section")
@@ -46,7 +34,7 @@ public class FetchPricesSteps {
     public void iShouldSeeUpdatedPrices() {
         assert suppliers != null && !suppliers.isEmpty() : "❌ No suppliers loaded!";
         LOGGER.info("📊 Updated ingredient prices:");
-        suppliers.forEach(supplier -> LOGGER.info(" - " + supplier));
+        suppliers.forEach(supplier -> LOGGER.info(" - " + supplier.toString()));
     }
 
     @Given("I have multiple supplier options")
@@ -61,12 +49,14 @@ public class FetchPricesSteps {
 
     @When("I view the prices")
     public void iViewThePrices() {
+        assert suppliers != null && !suppliers.isEmpty() : "❌ No suppliers to view!";
         LOGGER.info("👀 Viewing all supplier prices:");
-        suppliers.forEach(s -> LOGGER.info(" - " + s));
+        suppliers.forEach(s -> LOGGER.info(" - " + s.toString()));
     }
 
     @Then("I should be able to compare them side-by-side")
     public void iShouldBeAbleToCompareThem() {
+        assert suppliers != null && suppliers.size() > 1 : "❌ Not enough suppliers to compare!";
         LOGGER.info("📈 Side-by-side comparison view:");
         suppliers.forEach(supplier -> LOGGER.info(supplier.toString()));
     }
@@ -83,22 +73,22 @@ public class FetchPricesSteps {
 
     @When("I compare prices")
     public void iComparePrices() {
-        selectedSupplier = suppliers.stream()
-                .min(Comparator.comparingDouble(s -> s.price))
-                .orElse(null);
-
-        assert selectedSupplier != null : "❌ No supplier found!";
-        LOGGER.info("🔍 Lowest price found at: " + selectedSupplier.name);
-
         if (suppliers == null || suppliers.isEmpty()) {
-            throw new IllegalStateException("❌ Supplier list is not initialized!");
+
+            throw new IllegalStateException("❌ Supplier list is not initialized or is empty!");
         }
 
+        selectedSupplier = suppliers.stream()
+                .min(Comparator.comparingDouble(Supplier::getPrice))
+                .orElse(null);
+
+        assert selectedSupplier != null : "❌ No supplier found after comparison (should not happen if list is not empty)!";
+        LOGGER.info("🔍 Lowest price found at: " + selectedSupplier.getName());
     }
 
     @Then("I can choose the supplier with the best offer")
     public void iCanChooseBestSupplier() {
         assert selectedSupplier != null : "❌ No supplier selected!";
-        LOGGER.info("✅ Best offer selected from: " + selectedSupplier.name + " ($" + selectedSupplier.price + ")");
+        LOGGER.info("✅ Best offer selected from: " + selectedSupplier.getName() + " ($" + selectedSupplier.getPrice() + ")"); // Use getters
     }
 }

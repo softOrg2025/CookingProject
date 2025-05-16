@@ -1,17 +1,24 @@
-//package cook;
-//
-//public class Supplier {
-//
-//
-//    private String name;
-//    private String contactEmail;
-//
-//    public Supplier(String name, String contactEmail) {
-//        this.name = name;
-//        this.contactEmail = contactEmail;
-//    }
-//
-//    public String getName() { return name; }
-//    public String getContactEmail() { return contactEmail; }
-//
-//}
+package cook;
+
+public class Supplier {
+    private String name;
+    private double price;
+
+    public Supplier(String name, double price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    @Override
+    public String toString() {
+        return name + ": $" + price;
+    }
+}
