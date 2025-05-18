@@ -79,7 +79,6 @@ public class FinancialReportsSteps {
             currentAdmin = new User("Default Admin", "admin@system.com", "adminPass", Role.manager);
         }
     }
-
     @Before
     public void setUp() {
         System.out.println("--- Initializing state for FinancialReportsSteps ---");
@@ -101,10 +100,11 @@ public class FinancialReportsSteps {
             }
         }
 
-        if (Application.users.isEmpty() || Application.meals.isEmpty()) {
-            initializeMockData();
-        }
+        // ***** تعديل مهم: قم دائمًا بتهيئة البيانات الوهمية لهذه الاختبارات *****
+        initializeMockData();
+        System.out.println("Forced mock data re-initialization for FinancialReportsSteps scenario.");
     }
+
 
     @Given("I am a system administrator")
     public void iAmASystemAdministrator() {

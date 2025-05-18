@@ -1,147 +1,203 @@
 package testCases;
 
-
-
 import cook.Ingredient;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
-import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assertions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-
-
+import java.util.stream.Collectors;
 
 public class IngredientSuggestionSteps {
 
-    private List<Ingredient> selectedIngredients = new ArrayList<>();
+    private final Map<String, Ingredient> availableIngredients = new HashMap<>();
+    private Ingredient selectedIngredient;
+    private String currentDietaryRestriction;
+    private Ingredient suggestedAlternative;
+    private boolean substitutionAccepted = false;
+    private String originalIngredientForSubstitution;
+    private String substituteIngredientForSubstitution;
 
-    private Map<Ingredient, List<Ingredient>> alternativeIngredientsMap = new HashMap<>();
-
-    private boolean alternativeSuggested = false;
-    private boolean chefNotified = false;
-    private boolean dietaryRestrictionApplied = false;
-
-
-    private Ingredient avocado = new Ingredient("Avocado");
-    private Ingredient guacamole = new Ingredient("Guacamole");
-    private Ingredient milk = new Ingredient("Milk");
-    private Ingredient soyMilk = new Ingredient("Soy Milk");
-    private Ingredient cheese = new Ingredient("Cheese"); // Example for incompatibility
-
-    public IngredientSuggestionSteps() {
+    private void initializeIngredients() {
+        availableIngredients.clear();
+        Ingredient avocado = new Ingredient("Avocado");
+        Ingredient guacamole = new Ingredient("Guacamole");
+        Ingredient milk = new Ingredient("Milk");
+        Ingredient soyMilk = new Ingredient("Soy Milk");
+        Ingredient cheese = new Ingredient("Cheese");
 
         avocado.addPotentialAlternative(guacamole);
         milk.addPotentialAlternative(soyMilk);
 
-        // Setup dietary tags
         milk.addDietaryTag("dairy");
         cheese.addDietaryTag("dairy");
         soyMilk.addDietaryTag("vegan");
-        soyMilk.addDietaryTag("dairy-free");
+        soyMilk.addDietaryTag("dairy-free-alternative"); // Tag for being a dairy-free alternative
         guacamole.addDietaryTag("vegan");
         guacamole.addDietaryTag("gluten-free");
+
+        availableIngredients.put("Avocado", avocado);
+        availableIngredients.put("Guacamole", guacamole);
+        availableIngredients.put("Milk", milk);
+        availableIngredients.put("Soy Milk", soyMilk);
+        availableIngredients.put("Cheese", cheese);
     }
 
-
-    @Given("the customer has selected an unavailable ingredient")
-    public void the_customer_has_selected_an_unavailable_ingredient() {
-        selectedIngredients.clear();
-        alternativeIngredientsMap.clear();
-
-
-        avocado.setAvailable(false);
-        selectedIngredients.add(avocado);
-
-
-        if (!avocado.isAvailable() && !avocado.getPotentialAlternatives().isEmpty()) {
-            alternativeIngredientsMap.put(avocado, new ArrayList<>(avocado.getPotentialAlternatives()));
-        }
-        System.out.println("Scenario: Customer selected unavailable " + avocado.getName());
+    @Before
+    public void setUp() {
+        initializeIngredients();
+        selectedIngredient = null;
+        currentDietaryRestriction = null;
+        suggestedAlternative = null;
+        substitutionAccepted = false;
+        originalIngredientForSubstitution = null;
+        substituteIngredientForSubstitution = null;
+        System.out.println("--- IngredientSuggestionSteps: Scenario Start, State Cleared & Ingredients Initialized ---");
     }
 
-    @Given("the customer has a dietary restriction")
-    public void the_customer_has_a_dietary_restriction() {
-        dietaryRestrictionApplied = true;
-
-        System.out.println("Scenario: Customer has a dietary restriction (e.g., vegan).");
+    @Given("the customer has selected {string} which is unavailable")
+    public void the_customer_has_selected_which_is_unavailable(String ingredientName) {
+        selectedIngredient = availableIngredients.get(ingredientName);
+        Assertions.assertNotNull(selectedIngredient, "Ingredient " + ingredientName + " not found in available ingredients.");
+        selectedIngredient.setAvailable(false);
+        System.out.println("Customer selected unavailable ingredient: " + selectedIngredient.getName());
     }
 
-    @When("the customer selects an incompatible ingredient")
-    public void the_customer_selects_an_incompatible_ingredient() {
-        selectedIngredients.clear();
+    @When("the system identifies the unavailability")
+    public void the_system_identifies_the_unavailability() {
+        Assertions.assertNotNull(selectedIngredient, "No ingredient was selected to check for unavailability.");
+        Assertions.assertFalse(selectedIngredient.isAvailable(), selectedIngredient.getName() + " was expected to be unavailable.");
 
-        selectedIngredients.add(milk);
-        System.out.println("Scenario: Customer selects " + milk.getName() + " (potentially incompatible).");
-    }
-
-    @Given("the system has suggested an alternative ingredient")
-    public void the_system_has_suggested_an_alternative_ingredient() {
-
-        if (!selectedIngredients.isEmpty()) {
-            Ingredient currentSelection = selectedIngredients.get(0);
-            if (!currentSelection.isAvailable() && alternativeIngredientsMap.containsKey(currentSelection) && !alternativeIngredientsMap.get(currentSelection).isEmpty()) {
-                alternativeSuggested = true;
-                System.out.println("Scenario: System has suggested alternatives for " + currentSelection.getName());
-            } else {
-                System.out.println("Scenario: System would suggest, but no unavailable item or no alternatives mapped.");
-
-            }
+        if (!selectedIngredient.getPotentialAlternatives().isEmpty()) {
+            suggestedAlternative = selectedIngredient.getPotentialAlternatives().get(0);
+            System.out.println("System identified unavailability for " + selectedIngredient.getName() + ". Suggested alternative: " + suggestedAlternative.getName());
         } else {
-            System.out.println("Scenario: System would suggest, but no ingredient selected to base suggestion on.");
+            System.out.println("System identified unavailability for " + selectedIngredient.getName() + ", but no potential alternatives found.");
+            suggestedAlternative = null;
         }
     }
 
-    @When("the substitution is applied")
-    public void the_substitution_is_applied() {
-        if (alternativeSuggested && !selectedIngredients.isEmpty()) {
-            Ingredient unavailableIngredient = selectedIngredients.get(0);
+    @Then("the system should suggest {string} as an alternative for {string}")
+    public void the_system_should_suggest_as_an_alternative_for(String expectedAlternativeName, String originalIngredientName) {
+        Assertions.assertNotNull(suggestedAlternative, "No alternative was suggested by the system.");
+        Assertions.assertEquals(expectedAlternativeName, suggestedAlternative.getName(), "Suggested alternative was not the expected one.");
+        Assertions.assertEquals(originalIngredientName, selectedIngredient.getName(), "The original ingredient for which suggestion was made is incorrect.");
+        System.out.println("Verified: System suggested " + suggestedAlternative.getName() + " for " + originalIngredientName);
+    }
 
+    @Given("the customer has a {string} dietary restriction")
+    public void the_customer_has_a_dietary_restriction(String restriction) {
+        currentDietaryRestriction = restriction.toLowerCase();
+        System.out.println("Customer has dietary restriction: " + currentDietaryRestriction);
+    }
 
-            if (alternativeIngredientsMap.containsKey(unavailableIngredient) && !alternativeIngredientsMap.get(unavailableIngredient).isEmpty()) {
-                Ingredient substitute = alternativeIngredientsMap.get(unavailableIngredient).get(0);
+    @Given("the customer selects {string} which conflicts with the restriction")
+    public void the_customer_selects_which_conflicts_with_the_restriction(String ingredientName) {
+        selectedIngredient = availableIngredients.get(ingredientName);
+        Assertions.assertNotNull(selectedIngredient, "Ingredient " + ingredientName + " not found.");
+        Assertions.assertNotNull(currentDietaryRestriction, "Dietary restriction not set for this scenario.");
 
+        boolean conflicts = false;
+        if ("dairy-free".equals(currentDietaryRestriction) && selectedIngredient.getDietaryTags().contains("dairy")) {
+            conflicts = true;
+        }
+        // Add more conflict checks if needed for other restrictions
 
-                boolean substituteIsCompatible = true;
-                if (dietaryRestrictionApplied) {
+        Assertions.assertTrue(conflicts, selectedIngredient.getName() + " was expected to conflict with " + currentDietaryRestriction + " restriction.");
+        System.out.println("Customer selected " + selectedIngredient.getName() + ", which conflicts with " + currentDietaryRestriction);
+    }
 
-                    if (substitute.getDietaryTags().contains("dairy")) {
-                        System.out.println("Warning: Substitute " + substitute.getName() + " might be incompatible with dietary restriction.");
-                        substituteIsCompatible = false;
-                    }
-                }
+    @When("the system identifies the dietary conflict")
+    public void the_system_identifies_the_dietary_conflict() {
+        Assertions.assertNotNull(selectedIngredient, "No ingredient selected to check for dietary conflict.");
+        Assertions.assertNotNull(currentDietaryRestriction, "No dietary restriction set.");
 
-                if (substituteIsCompatible) {
-                    selectedIngredients.clear();
-                    selectedIngredients.add(substitute);
-                    chefNotified = true;
-                    System.out.println("Substitution applied: " + unavailableIngredient.getName() + " -> " + substitute.getName());
-                } else {
-                    System.out.println("Substitution NOT applied for " + unavailableIngredient.getName() + " due to dietary incompatibility of substitute " + substitute.getName());
-
-                }
-            } else {
-                System.out.println("Substitution not applied: No alternatives mapped for " + unavailableIngredient.getName());
+        for (Ingredient alt : selectedIngredient.getPotentialAlternatives()) {
+            boolean suitable = true;
+            if ("dairy-free".equals(currentDietaryRestriction) && alt.getDietaryTags().contains("dairy")) {
+                suitable = false;
             }
-        } else {
-            System.out.println("Substitution not applied: Conditions not met (no alternative suggested or no ingredient selected).");
+            // Add more suitability checks for other restrictions
+
+            if (suitable) {
+                suggestedAlternative = alt;
+                System.out.println("System identified dietary conflict for " + selectedIngredient.getName() + ". Suggested alternative: " + suggestedAlternative.getName());
+                return;
+            }
         }
+        System.out.println("System identified dietary conflict for " + selectedIngredient.getName() + ", but no suitable alternative found.");
+        suggestedAlternative = null;
     }
 
-    @Then("the system should notify the chef")
-    public void the_system_should_notify_the_chef() {
+    @Given("an alternative {string} has been suggested for unavailable {string}")
+    public void an_alternative_has_been_suggested_for_unavailable(String alternativeName, String originalName) {
+        this.originalIngredientForSubstitution = originalName;
+        Ingredient originalIng = availableIngredients.get(originalName);
+        Ingredient altIng = availableIngredients.get(alternativeName);
 
-        if (chefNotified && !selectedIngredients.isEmpty()) {
-            System.out.println("Chef notified of substitution: " + selectedIngredients.get(0).getName());
+        Assertions.assertNotNull(originalIng, "Original ingredient " + originalName + " not found.");
+        Assertions.assertNotNull(altIng, "Alternative ingredient " + alternativeName + " not found.");
 
-        } else if (chefNotified) {
-            System.out.println("Chef notified, but selection list is empty (unexpected state).");
+        originalIng.setAvailable(false); // Ensure it's marked as unavailable
+        this.suggestedAlternative = altIng; // Set the suggested alternative
+        this.selectedIngredient = originalIng; // The context is about this original ingredient
+
+        System.out.println("Setup: " + alternativeName + " suggested for unavailable " + originalName);
+    }
+
+    @Given("an alternative {string} has been suggested for {string} due to dietary conflict")
+    public void an_alternative_has_been_suggested_for_due_to_dietary_conflict(String alternativeName, String originalName) {
+        Assertions.assertNotNull(currentDietaryRestriction, "Dietary restriction must be set before this step.");
+        this.originalIngredientForSubstitution = originalName;
+        Ingredient originalIng = availableIngredients.get(originalName);
+        Ingredient altIng = availableIngredients.get(alternativeName);
+
+        Assertions.assertNotNull(originalIng, "Original ingredient " + originalName + " not found.");
+        Assertions.assertNotNull(altIng, "Alternative ingredient " + alternativeName + " not found.");
+
+        // Verify the conflict and suitability of alternative (optional, but good for robust Given)
+        boolean conflicts = false;
+        if ("dairy-free".equals(currentDietaryRestriction) && originalIng.getDietaryTags().contains("dairy")) {
+            conflicts = true;
         }
+        Assertions.assertTrue(conflicts, originalIng.getName() + " should conflict with " + currentDietaryRestriction);
 
+        boolean suitableAlternative = true;
+        if ("dairy-free".equals(currentDietaryRestriction) && altIng.getDietaryTags().contains("dairy")) {
+            suitableAlternative = false;
+        }
+        Assertions.assertTrue(suitableAlternative, altIng.getName() + " should be a suitable alternative for " + currentDietaryRestriction);
+
+
+        this.suggestedAlternative = altIng;
+        this.selectedIngredient = originalIng;
+
+        System.out.println("Setup: " + alternativeName + " suggested for " + originalName + " due to " + currentDietaryRestriction + " conflict.");
+    }
+
+    @When("the customer accepts the substitution of {string} with {string}")
+    public void the_customer_accepts_the_substitution_of_with(String originalIngName, String substituteIngName) {
+        Assertions.assertNotNull(suggestedAlternative, "No alternative was suggested to accept.");
+        Assertions.assertEquals(originalIngName, this.selectedIngredient.getName(), "Original ingredient in acceptance step does not match context.");
+        Assertions.assertEquals(substituteIngName, suggestedAlternative.getName(), "Substitute in acceptance step does not match suggested alternative.");
+
+        this.substitutionAccepted = true;
+        this.originalIngredientForSubstitution = originalIngName; // Already set in Given, but good to confirm
+        this.substituteIngredientForSubstitution = substituteIngName;
+        System.out.println("Customer accepted substitution: " + originalIngName + " -> " + substituteIngName);
+    }
+
+    @Then("the chef should be notified of the substitution from {string} to {string}")
+    public void the_chef_should_be_notified_of_the_substitution_from_to(String expectedOriginal, String expectedSubstitute) {
+        Assertions.assertTrue(substitutionAccepted, "Substitution was not accepted, so chef should not be notified.");
+        Assertions.assertEquals(expectedOriginal, originalIngredientForSubstitution, "Original ingredient in notification mismatch.");
+        Assertions.assertEquals(expectedSubstitute, substituteIngredientForSubstitution, "Substitute ingredient in notification mismatch.");
+        System.out.println("Verified: Chef notified of substitution from " + expectedOriginal + " to " + expectedSubstitute);
+        // In a real system, this would trigger an event or call a notification service.
     }
 }
-
-

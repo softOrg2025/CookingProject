@@ -1,142 +1,109 @@
 package testCases;
+
 import cook.Ingredient;
 import cook.Meal;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-
-import java.util.*;
-
-
-
-// package com.example.yourpackage.steps; // Your package for step definitions
-
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.When;
-import io.cucumber.java.en.Then;
-import org.junit.jupiter.api.Assertions; // For assertions
+import org.junit.jupiter.api.Assertions;
+import testCases.TestContext; //  استيراد السياق
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
+// لا حاجة لـ DataTable هنا إذا كانت الخطوة المعرفة هنا لا تستخدمها مباشرة
 
 public class SystemValidationSteps {
+    private final TestContext testContext; //  للسياق المشترك
+    private boolean mealSubmissionPrevented = false; //  هذا خاص بمنع الإرسال
 
-    private List<Ingredient> selectedIngredients = new ArrayList<>();
-    private boolean errorDisplayedForIncompatibility = false; // More specific name
-    private Meal currentMeal; // To hold the meal being evaluated
-    private boolean mealSubmissionPrevented = false;
+    private static final char DEFAULT_MEAL_SIZE = 'M'; // يمكن إبقاؤها إذا استخدمت محليًا
+    private static final double DEFAULT_MEAL_PRICE = 0.0; // يمكن إبقاؤها
 
-    // Default values for creating a Meal if not otherwise specified
-    private static final char DEFAULT_MEAL_SIZE = 'M';
-    private static final double DEFAULT_MEAL_PRICE = 0.0; // Price might not be relevant for validation only
-
-    // Helper to convert List<Ingredient> to List<String> (names)
-    private List<String> getIngredientNames(List<Ingredient> ingredients) {
-        if (ingredients == null) {
-            return new ArrayList<>();
-        }
-        return ingredients.stream().map(Ingredient::getName).collect(Collectors.toList());
+    public SystemValidationSteps(TestContext context) { //  Constructor لحقن السياق
+        this.testContext = context;
     }
 
-    // Helper to create or update the currentMeal based on selectedIngredients
-    private void buildCurrentMealForValidation() {
-        List<String> ingredientNames = getIngredientNames(selectedIngredients);
-        // For validation purposes, name, size, and price might be minimal
-        this.currentMeal = new Meal("ValidationMeal", ingredientNames, DEFAULT_MEAL_SIZE, DEFAULT_MEAL_PRICE);
-    }
-
-    @io.cucumber.java.Before
+    @Before // Cucumber Hook
     public void setUp() {
-        selectedIngredients.clear();
-        errorDisplayedForIncompatibility = false;
-        currentMeal = null;
+        testContext.reset(); //  مهم جدًا: إعادة تعيين السياق المشترك قبل كل سيناريو
         mealSubmissionPrevented = false;
-        System.out.println("--- SystemValidationSteps: Scenario Start, State Cleared ---");
+        System.out.println("--- SystemValidationSteps: Scenario Start, TestContext Reset ---");
     }
 
-    @Given("the customer has selected ingredients:")
-    public void the_customer_has_selected_ingredients(io.cucumber.datatable.DataTable dataTable) {
-        selectedIngredients.clear();
-        List<String> ingredientNames = dataTable.asList(String.class);
-        for (String name : ingredientNames) {
-            if (!name.equalsIgnoreCase("ingredientName")) { // Skip header if present
-                selectedIngredients.add(new Ingredient(name));
-            }
-        }
-        System.out.println("Customer selected for validation: " + getIngredientNames(selectedIngredients));
-        buildCurrentMealForValidation(); // Build meal after selection
+    // دالة مساعدة لإنشاء وجبة في السياق إذا لم تكن موجودة (خاصة بخطوات Given هنا)
+    private void ensureSharedMealFromSharedIngredients(String mealName) {
+        List<String> ingredientNames = testContext.sharedSelectedIngredients.stream()
+                .map(Ingredient::getName)
+                .collect(Collectors.toList());
+        testContext.sharedCurrentMeal = new Meal(mealName, ingredientNames, DEFAULT_MEAL_SIZE, DEFAULT_MEAL_PRICE);
+        System.out.println("SystemValidationSteps: Ensured/Created sharedCurrentMeal as '" + mealName + "' with ingredients: " + ingredientNames);
     }
 
 
+    // هذه الخطوة الآن ستُعرف هنا، وتعمل على السياق المشترك
     @Given("the customer has selected incompatible ingredients")
     public void the_customer_has_selected_incompatible_ingredients() {
-        selectedIngredients.clear();
-        selectedIngredients.add(new Ingredient("Milk"));
-        selectedIngredients.add(new Ingredient("Lemon"));
-        System.out.println("Customer selected incompatible: Milk, Lemon");
-        buildCurrentMealForValidation();
+        testContext.sharedSelectedIngredients.clear();
+        testContext.sharedSelectedIngredients.add(new Ingredient("Milk"));
+        testContext.sharedSelectedIngredients.add(new Ingredient("Lemon"));
+        ensureSharedMealFromSharedIngredients("IncompatibleTestMeal");
+        System.out.println("SystemValidationSteps: Set (in context) incompatible ingredients: Milk, Lemon");
     }
 
-    // This step can be used if "invalid" means the same as "leading to incompatibility"
+    // وهذه الخطوة أيضًا تُعرف هنا
     @Given("the customer has selected invalid ingredients")
     public void the_customer_has_selected_invalid_ingredients() {
-        selectedIngredients.clear();
-        // Assuming "invalid" here means they will form an incompatible combination
-        // as per the original test's logic.
-        selectedIngredients.add(new Ingredient("Milk"));
-        selectedIngredients.add(new Ingredient("Lemon"));
-        // If "invalid" meant something else (e.g. ingredient doesn't exist),
-        // the setup and Ingredient class would need to reflect that.
-        System.out.println("Customer selected (treated as) incompatible: Milk, Lemon");
-        buildCurrentMealForValidation();
+        testContext.sharedSelectedIngredients.clear();
+        testContext.sharedSelectedIngredients.add(new Ingredient("Milk"));
+        testContext.sharedSelectedIngredients.add(new Ingredient("Lemon"));
+        ensureSharedMealFromSharedIngredients("InvalidTestMeal");
+        System.out.println("SystemValidationSteps: Set (in context) invalid ingredients: Milk, Lemon");
     }
 
     @When("the system checks the combination")
     public void the_system_checks_the_combination() {
-        if (currentMeal == null) {
-            buildCurrentMealForValidation(); // Ensure meal is built if not already
-        }
-        if (currentMeal.hasIncompatibleIngredients()) {
-            errorDisplayedForIncompatibility = true;
-            System.out.println("System Check: Incompatible combination detected.");
+        // تأكد من أن الوجبة في السياق تم إنشاؤها (عادةً بواسطة خطوة Given)
+        Assertions.assertNotNull(testContext.sharedCurrentMeal, "Shared current meal in context should not be null when checking combination.");
+
+        if (testContext.sharedCurrentMeal.hasIncompatibleIngredients()) {
+            testContext.sharedErrorDisplayed = true; // تحديث الحالة في السياق
+            System.out.println("SystemValidationSteps Check (on shared meal): Incompatible combination detected.");
         } else {
-            errorDisplayedForIncompatibility = false;
-            System.out.println("System Check: No incompatible combination detected.");
+            testContext.sharedErrorDisplayed = false; // تحديث الحالة في السياق
+            System.out.println("SystemValidationSteps Check (on shared meal): No incompatible combination detected.");
         }
     }
 
     @When("the system identifies the issue")
     public void the_system_identifies_the_issue() {
-        // This is essentially the same as checking the combination for incompatibility
-        the_system_checks_the_combination();
-        if (errorDisplayedForIncompatibility) {
-            System.out.println("System Identified Issue: Incompatibility found.");
+        System.out.println("SystemValidationSteps: Identifying issue (on shared meal)...");
+        the_system_checks_the_combination(); // ستعمل على testContext.sharedCurrentMeal و testContext.sharedErrorDisplayed
+        if (testContext.sharedErrorDisplayed) {
+            System.out.println("SystemValidationSteps Identified Issue (on shared meal): Incompatibility found.");
+        } else {
+            System.out.println("SystemValidationSteps Identified Issue (on shared meal): No incompatibility found.");
         }
     }
 
     @Then("the system should flag any incompatible ingredients")
     public void the_system_should_flag_any_incompatible_ingredients() {
-        Assertions.assertTrue(errorDisplayedForIncompatibility, "System should have flagged incompatible ingredients.");
-        if (errorDisplayedForIncompatibility) {
-            System.out.println("Flag: Incompatible ingredients detected in the current selection.");
-            // In a real UI, this would be a visual flag or message.
+        Assertions.assertTrue(testContext.sharedErrorDisplayed, "System should have flagged incompatible ingredients (shared state), but it didn't.");
+        if (testContext.sharedErrorDisplayed) {
+            System.out.println("Assertion Passed: System correctly flagged incompatible ingredients (shared state).");
         }
     }
 
     @Then("the system should suggest alternative ingredients")
     public void the_system_should_suggest_alternative_ingredients() {
-        Assertions.assertTrue(errorDisplayedForIncompatibility,
-                "Alternatives should only be suggested if an incompatibility was found.");
+        Assertions.assertTrue(testContext.sharedErrorDisplayed, "Alternatives should only be suggested if an incompatibility was found (shared state).");
+        Assertions.assertNotNull(testContext.sharedCurrentMeal, "Shared current meal in context should not be null for suggestions.");
 
-        if (errorDisplayedForIncompatibility && currentMeal != null) {
-            System.out.println("Suggesting alternatives due to incompatibility:");
+        if (testContext.sharedErrorDisplayed && testContext.sharedCurrentMeal != null) {
+            System.out.println("Suggesting alternatives for shared meal due to incompatibility:");
             boolean suggestionsFound = false;
-            // We need to iterate through the ingredients that are part of the known incompatible combinations.
-            // The Meal.incompatibleCombinations is static and private, but hasIncompatibleIngredients uses it.
-            // For suggesting, we can iterate through the current meal's ingredients and see if Meal.suggestAlternative has options.
-            for (String ingredientNameInMeal : currentMeal.getIngredients()) {
+            for (String ingredientNameInMeal : testContext.sharedCurrentMeal.getIngredients()) {
                 List<String> alternatives = Meal.suggestAlternative(ingredientNameInMeal);
                 if (!alternatives.isEmpty()) {
                     System.out.println("  Alternatives for " + ingredientNameInMeal + ": " + alternatives);
@@ -144,39 +111,41 @@ public class SystemValidationSteps {
                 }
             }
             if (!suggestionsFound) {
-                System.out.println("  No specific alternatives found via Meal.suggestAlternative for the current incompatible ingredients.");
+                System.out.println("  No specific alternatives found for the current incompatible ingredients in the shared meal.");
+            } else {
+                System.out.println("Assertion Passed: System suggested alternatives for shared meal.");
             }
-        } else if (currentMeal == null) {
-            System.out.println("Cannot suggest alternatives: current meal not built.");
         }
     }
 
-
     @When("the customer tries to submit the meal")
     public void the_customer_tries_to_submit_the_meal() {
-        if (currentMeal == null) {
-            buildCurrentMealForValidation();
+        // تأكد من أن الوجبة في السياق تم إنشاؤها
+        if (testContext.sharedCurrentMeal == null && !testContext.sharedSelectedIngredients.isEmpty()) {
+            // إذا لم تقم خطوة Given بإنشاء الوجبة، أنشئها الآن
+            ensureSharedMealFromSharedIngredients("SubmissionTestMeal");
         }
+        Assertions.assertNotNull(testContext.sharedCurrentMeal, "Shared current meal must exist before attempting submission.");
 
-        if (currentMeal.hasIncompatibleIngredients()) {
-            errorDisplayedForIncompatibility = true; // Re-confirm error state
+        if (testContext.sharedCurrentMeal.hasIncompatibleIngredients()) {
+            testContext.sharedErrorDisplayed = true;
             mealSubmissionPrevented = true;
-            System.out.println("Submission Attempt: Meal contains incompatible ingredients. Submission will be prevented.");
+            System.out.println("Submission Attempt (shared meal): Meal contains incompatible ingredients. Submission will be prevented.");
         } else {
-            mealSubmissionPrevented = false; // Assume submission would proceed if no errors
-            System.out.println("Submission Attempt: Meal is valid. Submission would proceed.");
-            // this.isMealSubmitted = true; // If you had a flag for actual submission
+            // testContext.sharedErrorDisplayed يجب أن تكون false إذا لم تكن هناك مشكلة
+            mealSubmissionPrevented = false;
+            System.out.println("Submission Attempt (shared meal): Meal is valid. Submission would proceed.");
         }
     }
 
     @Then("the system should prevent submission and display an error")
     public void the_system_should_prevent_submission_and_display_an_error() {
-        Assertions.assertTrue(mealSubmissionPrevented, "Meal submission should have been prevented.");
-        Assertions.assertTrue(errorDisplayedForIncompatibility, "An error should be displayed for incompatible ingredients during submission.");
+        Assertions.assertTrue(mealSubmissionPrevented, "Meal submission (based on shared meal) should have been prevented.");
+        Assertions.assertTrue(testContext.sharedErrorDisplayed, "An error (in shared state) should be displayed for incompatible ingredients during submission.");
 
-        if (mealSubmissionPrevented) {
-            System.out.println("Error Displayed: Cannot submit meal with incompatible ingredients. Please revise your selection.");
-            // In a real app, assert UI error message.
+        if (mealSubmissionPrevented && testContext.sharedErrorDisplayed) {
+            System.out.println("Assertion Passed: System correctly prevented submission and an error condition was present (shared state).");
+            System.out.println("Error Displayed (simulated): Cannot submit meal with incompatible ingredients. Please revise your selection.");
         }
     }
 }

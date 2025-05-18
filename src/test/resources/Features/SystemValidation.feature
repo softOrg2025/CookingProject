@@ -1,7 +1,10 @@
 Feature: System validates ingredient combinations
 
   Scenario: System checks for incompatible ingredients
-    Given the customer has selected ingredients
+    Given the customer has selected ingredients:
+      | ingredientName |
+      | Milk           |
+      | Lemon          |
     When the system checks the combination
     Then the system should flag any incompatible ingredients
 
