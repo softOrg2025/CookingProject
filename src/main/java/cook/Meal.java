@@ -3,13 +3,8 @@ package cook;
 
 import java.util.*;
 
-
-
-
-
-
 public class Meal {
-    private List<String> ingredients ; // This is List<String> as per your provided class
+    private List<String> ingredients ;
     private Map<String, Integer> ingredientQuantities;
     private char size;
     private double price;
@@ -17,19 +12,19 @@ public class Meal {
     private static final Set<List<String>> incompatibleCombinations = new HashSet<>();
 
     static {
-        // Ensure these match what you expect for incompatibility checks
+
         incompatibleCombinations.add(Arrays.asList("Milk", "Lemon"));
         incompatibleCombinations.add(Arrays.asList("Fish", "Cheese"));
-        // Add more known incompatible combinations if needed
+
     }
 
-    // Constructor using List<String> for ingredients
+
     public Meal(List<String> ingredients, char size, double price) {
         this.ingredients = new ArrayList<>(ingredients);
         this.size = size;
         this.price = price;
         this.ingredientQuantities = new HashMap<>();
-        // Initialize quantities - assuming 1 for each initially
+
         if (ingredients != null) {
             ingredients.forEach(ing -> ingredientQuantities.put(ing, 1));
         }
@@ -96,7 +91,7 @@ public class Meal {
         }
     }
 
-    // Optional: equals and hashCode for Meal if you need to compare Meal objects directly
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

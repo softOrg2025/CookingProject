@@ -11,6 +11,7 @@ public class chef extends User{
     private Map<String, String> taskDetails;
     private List<String> notifications;
 
+
     public chef(String name, String email, String password, kitchen_manager kitchenManager) {
         super(name, email, password, Role.Chef);
         this.tasks = new ArrayList<>();

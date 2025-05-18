@@ -11,11 +11,6 @@ import java.util.stream.Collectors;
 public class InventoryService {
     private Map<String, InventoryItem> inventory = new HashMap<>();
 
-    private List<Meal> mealsUsingIngredients = new ArrayList<>();
-
-    public void registerMeal(Meal meal) {
-        mealsUsingIngredients.add(meal);
-    }
     public void updateStockFromMealPreparation(Meal meal) {
         meal.getIngredientQuantities().forEach((ingredient, quantity) -> {
             InventoryItem item = inventory.get(ingredient);
@@ -55,6 +50,8 @@ public class InventoryService {
         }
         return suggestions;
     }
+
+
 
     // Additional useful methods
     public int getCurrentStock(String ingredientName) {

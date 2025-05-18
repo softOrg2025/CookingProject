@@ -1,21 +1,15 @@
 package testCases;
 
 import io.cucumber.java.en.*;
-import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
-
-import io.cucumber.java.en.*;
 import cook.InventoryItem;
 import cook.InventoryService;
 import cook.NotificationService;
-// We don't strictly need kitchen_manager instance for these tests,
-// just a way to identify the manager for notifications.
-// import cook.kitchen_manager;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*; // Using JUnit 5 assertions
+
 
 public class LowStockAlertsSteps {
 
