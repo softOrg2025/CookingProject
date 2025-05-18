@@ -74,9 +74,7 @@ public class InventoryService {
         return po;
     }
 
-    public PurchaseOrder getPurchaseOrderDetails(String orderId) {
-        return generatedPurchaseOrders.get(orderId);
-    }
+
 
     public boolean sendPurchaseOrderToSupplier(String orderId) {
         PurchaseOrder po = generatedPurchaseOrders.get(orderId);

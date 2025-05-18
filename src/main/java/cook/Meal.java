@@ -78,20 +78,7 @@ public class Meal {
         return false;
     }
 
-    public boolean substituteIngredient(String oldIngredient, String newIngredient) {
-        if (ingredients.contains(oldIngredient)) {
-            ingredients.remove(oldIngredient);
-            ingredients.add(newIngredient);
-            // Update quantities map
-            ingredientQuantities.remove(oldIngredient);
-            ingredientQuantities.put(newIngredient, 1); // Assuming quantity 1 for new ingredient
-            System.out.println("Updated meal: " + name + " → Replaced " + oldIngredient + " with " + newIngredient);
-            return true;
-        } else {
-            System.out.println("Error: " + oldIngredient + " not found in " + name);
-            return false;
-        }
-    }
+
 
     public void setName(String name) {
         this.name = name;

@@ -52,27 +52,11 @@ public class Customer extends User {
     }
 
 
-    public void selectIngredient(String ingredient) {
-        selectedIngredients.add(ingredient);
-    }
 
-    public boolean validateIngredients() {
-        for (String ingredient : selectedIngredients) {
-            if (INCOMPATIBLE_INGREDIENTS.contains(ingredient)) {
-                return false;
-            }
-        }
-        return true;
-    }
 
-    public boolean saveCustomMeal(char size, double price) {
-        if (!selectedIngredients.isEmpty() && validateIngredients()) {
-            Meal meal = new Meal(new ArrayList<>(selectedIngredients), size, price);
-            savedMeals.put(getEmail(), meal);
-            return true;
-        }
-        return false;
-    }
+
+
+
 
     public List<String> getPreferences() {
         return Collections.unmodifiableList(preferences); //  إعادة نسخة غير قابلة للتعديل للحماية

@@ -21,10 +21,7 @@ public class Ingredient {
         this.potentialAlternatives = new ArrayList<>();
     }
 
-    public Ingredient(String name, boolean available) {
-        this(name);
-        this.available = available;
-    }
+
 
     // --- Getters ---
     public String getName() {
@@ -56,9 +53,7 @@ public class Ingredient {
         this.dietaryTags.add(tag.toLowerCase()); // Store tags consistently
     }
 
-    public void removeDietaryTag(String tag) {
-        this.dietaryTags.remove(tag.toLowerCase());
-    }
+
 
     public void addPotentialAlternative(Ingredient alternative) {
         this.potentialAlternatives.add(alternative);

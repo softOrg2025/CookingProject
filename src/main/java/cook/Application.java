@@ -42,8 +42,5 @@ public class Application {
     }
 
 
-    public static void saveMeal(Meal meal) {
-        meals.add(meal);
-        System.out.println("Meal saved: " + meal.getName());
-    }
+
 }
