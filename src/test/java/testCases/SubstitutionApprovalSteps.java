@@ -2,13 +2,12 @@ package testCases;
 
 import cook.Application;
 import cook.User;
-import cook.Role; // افترض أن هذا الـ enum موجود
+import cook.Role;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import testCases.TestContext;
-import java.util.*;
+
 import org.junit.jupiter.api.Assertions;
 
 public class SubstitutionApprovalSteps {
@@ -22,7 +21,7 @@ public class SubstitutionApprovalSteps {
     private String mealUpdatedMessage = "";
     private String customerNotification = "";
 
-    // بيانات الشيف لهذا الاختبار
+
     private final String CHEF_EMAIL = "shahd@gmail.com";
     private final String CHEF_PASSWORD = "Chef_Shahd";
     private final String CHEF_NAME = "Shahd Chef";
@@ -34,7 +33,7 @@ public class SubstitutionApprovalSteps {
 
     @Before
     public void setUp() {
-        // إعادة تعيين الحالة المحلية
+
         chefLoggedIn = false;
         substitutionNotificationDisplayed = false;
         substitutionApproved = false;
@@ -43,18 +42,14 @@ public class SubstitutionApprovalSteps {
         mealUpdatedMessage = "";
         customerNotification = "";
 
-        // لا ننسى إعادة تعيين سياق TestContext إذا كان هذا هو المكان المناسب
-        // testContext.reset(); // إذا لم يكن هناك @Before آخر يقوم بذلك أولاً
 
-        // التأكد من وجود الشيف في Application.users لهذه الاختبارات
-        // هذا يجعل هذه الفيتشر أكثر استقلالية
         ensureChefExistsInApplication();
 
         System.out.println("--- SubstitutionApprovalSteps: Scenario Start (local state cleared, chef ensured) ---");
     }
 
     private void ensureChefExistsInApplication() {
-        // تحقق مما إذا كان الشيف موجودًا بالفعل لتجنب الإضافة المكررة إذا كانت Application.users لا تُنظف بالكامل
+
         boolean chefExists = Application.users.stream()
                 .anyMatch(user -> user.getEmail().equalsIgnoreCase(CHEF_EMAIL) && user.getRole() == Role.Chef);
 
@@ -84,7 +79,7 @@ public class SubstitutionApprovalSteps {
         } else {
             chefLoggedIn = false;
             System.out.println("Chef login failed for " + CHEF_EMAIL + " or user is not a Chef.");
-            // اطبع حالة Application.users هنا للمساعدة في التشخيص
+
             System.out.println("Current Application.users size: " + Application.users.size());
             Application.users.forEach(u -> System.out.println("User: " + u.getName() + ", Email: " + u.getEmail() + ", Role: " + u.getRole()));
         }
@@ -100,13 +95,13 @@ public class SubstitutionApprovalSteps {
         } else {
             substitutionNotificationDisplayed = false;
             System.out.println("System: No substitution requests available in the shared queue.");
-            // قد يكون من المناسب إضافة تأكيد هنا إذا كنت تتوقع دائمًا وجود إشعار
+
             Assertions.assertFalse(testContext.sharedSubstitutionQueue.isEmpty(), "Expected substitution requests in the queue, but it was empty.");
         }
         Assertions.assertTrue(substitutionNotificationDisplayed, "A substitution notification should have been displayed.");
     }
 
-    // ... باقي دوال الخطوات كما هي ...
+
     @Given("the chef is viewing a substitution notification")
     public void the_chef_is_viewing_a_substitution_notification() {
         if (testContext.sharedSubstitutionQueue.isEmpty()) {
