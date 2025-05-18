@@ -1,5 +1,7 @@
 package cook;
 
+
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -72,9 +74,7 @@ public class InventoryService {
         return po;
     }
 
-    public PurchaseOrder getPurchaseOrderDetails(String orderId) {
-        return generatedPurchaseOrders.get(orderId);
-    }
+
 
     public boolean sendPurchaseOrderToSupplier(String orderId) {
         PurchaseOrder po = generatedPurchaseOrders.get(orderId);
@@ -100,5 +100,12 @@ public class InventoryService {
         }
         System.err.println("No PurchaseOrder found for ingredient name: " + ingredientName);
         return null;}
+
+
+
+
+
+
+
 
 }
