@@ -1,6 +1,5 @@
 package cook;
 
-// package com.example.yourpackage; // Add your package declaration
 
 import java.util.Objects;
 import java.util.Set;
@@ -23,7 +22,7 @@ public class Ingredient {
 
 
 
-    // --- Getters ---
+
     public String getName() {
         return name;
     }
@@ -40,7 +39,7 @@ public class Ingredient {
         return potentialAlternatives;
     }
 
-    // --- Setters / Modifiers ---
+
     public void setName(String name) {
         this.name = name;
     }
@@ -59,7 +58,7 @@ public class Ingredient {
         this.potentialAlternatives.add(alternative);
     }
 
-    // --- Overrides for collection handling (especially for Map keys) ---
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
