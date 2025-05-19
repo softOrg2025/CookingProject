@@ -1,25 +1,25 @@
-package testCases; // Or whatever package your TestContext is in
+package testCases;
 
 import java.util.Queue;
 import java.util.LinkedList;
-import cook.Ingredient; // If used elsewhere in TestContext
-import cook.Meal;      // If used elsewhere in TestContext
-import java.util.List; // If used elsewhere in TestContext
-import java.util.ArrayList; // If used elsewhere in TestContext
+import cook.Ingredient;
+import cook.Meal;
+import java.util.List;
+import java.util.ArrayList;
 
 
 public class TestContext {
-    // Fields from MealCustomizationSteps
+
     public List<Ingredient> sharedSelectedIngredients = new ArrayList<>();
     public Meal sharedCurrentMeal = null;
     public boolean sharedErrorDisplayed = false;
 
-    // Fields for SubstitutionApprovalSteps (and possibly others)
+
     public String lastSystemMessage = null;
     public Queue<String> sharedSubstitutionQueue = new LinkedList<>();
     public String lastCustomerNotification = null; // <<<<<<<< THIS FIELD IS ESSENTIAL
 
-    // Optional: A reset method
+
     public void reset() {
         sharedSelectedIngredients.clear();
         sharedCurrentMeal = null;

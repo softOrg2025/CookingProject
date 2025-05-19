@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SuggestRestockingSteps {
 
 
-    private InventoryService inventoryService = new InventoryService();
+    private final InventoryService inventoryService = new InventoryService();
     private List<InventoryItem> lowStockItems;
     private Map<String, Integer> restockSuggestions;
     private boolean planReviewedAndConsideredApprovable;
@@ -65,9 +65,7 @@ public class SuggestRestockingSteps {
         assertEquals(Integer.valueOf(7), restockSuggestions.get("Onion"), "الكمية المقترحة لـ Onion غير صحيحة.");
         assertEquals(Integer.valueOf(7), restockSuggestions.get("Garlic"), "الكمية المقترحة لـ Garlic غير صحيحة.");
 
-        restockSuggestions.forEach((name, qty) -> {
-            assertTrue(qty > 0, "الكمية المقترحة لـ " + name + " يجب أن تكون أكبر من 0. الكمية الفعلية: " + qty);
-        });
+        restockSuggestions.forEach((name, qty) -> assertTrue(qty > 0, "الكمية المقترحة لـ " + name + " يجب أن تكون أكبر من 0. الكمية الفعلية: " + qty));
     }
 
     @Given("I see restock suggestions")
@@ -75,7 +73,7 @@ public class SuggestRestockingSteps {
 
         if (restockSuggestions == null || restockSuggestions.isEmpty()) {
 
-            inventoryService.addInventoryItem(new InventoryItem("Onion", 3, 5, DEFAULT_UNIT_PRICE)); // للتأكد من أن هناك اقتراحات
+            inventoryService.addInventoryItem(new InventoryItem("Onion", 3, 5, DEFAULT_UNIT_PRICE));
             inventoryService.addInventoryItem(new InventoryItem("Garlic", 1, 4, DEFAULT_UNIT_PRICE));
             restockSuggestions = inventoryService.getRestockSuggestions();
         }

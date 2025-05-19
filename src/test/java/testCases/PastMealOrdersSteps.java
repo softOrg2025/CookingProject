@@ -10,14 +10,19 @@ public class PastMealOrdersSteps {
 
     private boolean loggedIn;
     private List<Order> pastOrders;
-    private List<Order> filteredOrders;
     private List<String> cart;
     private String confirmationMessage;
     private String systemMessageForNoOrders;
     private Customer customer;
-    private Application application;
-    private List<Meal> meals;
     private ChefOrderHistoryService orderHistoryService;
+
+    public boolean isLoggedIn() {
+        return loggedIn;
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        this.loggedIn = loggedIn;
+    }
 
     private static class Order {
         String mealName;
@@ -35,19 +40,19 @@ public class PastMealOrdersSteps {
     public void setUpScenario() {
         loggedIn = false;
         pastOrders = new ArrayList<>();
-        filteredOrders = new ArrayList<>();
+        List<Order> filteredOrders = new ArrayList<>();
         cart = new ArrayList<>();
         confirmationMessage = null;
         systemMessageForNoOrders = null;
 
         // Initialize application and test data
-        application = new Application();
+        Application application = new Application();
         customer = new Customer("Test User", "test@example.com", "password");
         application.users.add(customer);
         orderHistoryService = new ChefOrderHistoryService();
 
         // Initialize some test meals
-        meals = new ArrayList<>();
+        List<Meal> meals = new ArrayList<>();
         meals.add(new Meal("Vegetable Curry", Arrays.asList("Vegetables", "Rice"), 'M', 12.99));
         meals.add(new Meal("Chicken Biryani", Arrays.asList("Chicken", "Rice", "Spices"), 'L', 14.50));
         meals.add(new Meal("Pasta Alfredo", Arrays.asList("Pasta", "Cream", "Cheese"), 'S', 11.75));

@@ -6,9 +6,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;
 
 public class TrackStockSteps {
-    private InventoryService inventoryService = new InventoryService();
+    private final InventoryService inventoryService = new InventoryService();
     private Meal currentMeal;
-    private kitchen_manager activeKitchenManager;
 
     private static final String MANAGER_EMAIL = "manager@catering.com";
     private static final String MANAGER_PASSWORD = "kitchenMasterPass";
@@ -17,23 +16,23 @@ public class TrackStockSteps {
 
     @Given("I am a kitchen manager")
     public void i_am_a_kitchen_manager() {
-        this.activeKitchenManager = new kitchen_manager(MANAGER_NAME, MANAGER_EMAIL, MANAGER_PASSWORD, this.inventoryService);
+        kitchen_manager activeKitchenManager = new kitchen_manager(MANAGER_NAME, MANAGER_EMAIL, MANAGER_PASSWORD, this.inventoryService);
 
-        // تنظيف وإعداد بيانات الاختبار
+
         Application.users.removeIf(user -> user.getEmail().equals(MANAGER_EMAIL));
-        Application.users.add(this.activeKitchenManager);
+        Application.users.add(activeKitchenManager);
 
-        // تنفيذ عملية تسجيل الدخول
+
         User loggedInUser = Application.login(MANAGER_EMAIL, MANAGER_PASSWORD);
 
-        // التحقق من النتائج
-        assertEquals(this.activeKitchenManager, loggedInUser);
-        assertEquals(this.activeKitchenManager, Application.currentUser);
+
+        assertEquals(activeKitchenManager, loggedInUser);
+        assertEquals(activeKitchenManager, Application.currentUser);
     }
 
     @When("I open the inventory dashboard")
     public void i_open_the_inventory_dashboard() {
-        // هذه الخطوة لا تحتاج إلى تنفيذ فعلي في الاختبار
+
         assertNotNull(inventoryService);
     }
 

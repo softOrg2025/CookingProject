@@ -68,7 +68,7 @@ public class PurchaseOrdersSteps {
 
         this.currentPurchaseOrder = inventoryService.getPurchaseOrderByIngredientName(ingredientNameForLookup); //  ستحتاج لإضافة هذه الدالة إلى InventoryService
         assertNotNull(this.currentPurchaseOrder, "Could not find Purchase Order for ingredient: " + ingredientNameForLookup);
-        System.out.println("DEBUG @When (Scenario 2): Retrieved PO for " + ingredientNameForLookup + " with ID: " + (this.currentPurchaseOrder != null ? this.currentPurchaseOrder.getOrderId() : "null"));
+        System.out.println("DEBUG @When (Scenario 2): Retrieved PO for " + ingredientNameForLookup + " with ID: " + this.currentPurchaseOrder.getOrderId());
     }
 
     @Then("the purchase order details should show:")

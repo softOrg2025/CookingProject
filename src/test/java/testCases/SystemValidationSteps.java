@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SystemValidationSteps {
     private final TestContext testContext;
     private boolean mealSubmissionPrevented = false;
-    private NotificationService notificationService = Application.notificationService;
+    private final NotificationService notificationService = Application.notificationService;
 
     private static final char DEFAULT_MEAL_SIZE = 'M';
     private static final double DEFAULT_MEAL_PRICE = 0.0;

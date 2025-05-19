@@ -16,15 +16,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TaskNotificationSteps {
 
-    private final InventoryService inventoryService;
     private final kitchen_manager kitchenManager;
     private final chef chefInstance;
     private final String taskName;
-    private String defaultTaskDetails;
-    private LocalDateTime defaultTaskDeadline;
+    private final String defaultTaskDetails;
+    private final LocalDateTime defaultTaskDeadline;
 
     public TaskNotificationSteps() {
-        this.inventoryService = new InventoryService();
+        InventoryService inventoryService = new InventoryService();
         this.kitchenManager = new kitchen_manager("Manager", "manager@restaurant.com", "password123", inventoryService);
         this.chefInstance = new chef("John Doe", "john.doe@example.com", "password123", kitchenManager);
         this.kitchenManager.addChefToStaff(this.chefInstance);
@@ -52,7 +51,7 @@ public class TaskNotificationSteps {
     public void the_system_should_display_the_task_notification() {
         List<String> notifications = Application.notificationService.getNotifications(chefInstance.getEmail());
         assertFalse(notifications.isEmpty());
-        assertTrue(notifications.get(0).contains(taskName));
+        assertTrue(notifications.getFirst().contains(taskName));
     }
 
     @Given("the chef has received a task notification")
