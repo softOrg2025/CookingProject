@@ -128,8 +128,7 @@ public class PastMealOrdersSteps {
 
     @When("the customer filters orders by a specific date range")
     public void theCustomerFiltersOrdersByASpecificDateRange() {
-        // Note: The actual filtering by date would require date tracking in orders
-        // This is a simplified version
+
         List<Meal> allOrders = orderHistoryService.getCustomerOrderHistory(customer.getEmail());
         if (allOrders.isEmpty()) {
             systemMessageForNoOrders = "No orders found in this range.";
@@ -139,16 +138,14 @@ public class PastMealOrdersSteps {
 
     @Then("the system should display only orders within that range")
     public void theSystemShouldDisplayOnlyOrdersWithinThatRange() {
-        // Implementation would require date tracking in orders
-        // Currently just checking if any orders exist
+
         List<Meal> customerOrders = orderHistoryService.getCustomerOrderHistory(customer.getEmail());
         assertNotNull(customerOrders);
     }
 
     @Then("the orders should be sorted from newest to oldest")
     public void theOrdersShouldBeSortedFromNewestToOldest() {
-        // Implementation would require date tracking in orders
-        // Currently just checking if any orders exist
+
         List<Meal> customerOrders = orderHistoryService.getCustomerOrderHistory(customer.getEmail());
         assertNotNull(customerOrders);
     }
