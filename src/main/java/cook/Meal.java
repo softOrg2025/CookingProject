@@ -1,34 +1,27 @@
 package cook;
 
-
 import java.util.*;
 
 public class Meal {
-    private List<String> ingredients ;
-    private Map<String, Integer> ingredientQuantities;
-    private char size;
-    private double price;
+    private final List<String> ingredients ;
+    private final Map<String, Integer> ingredientQuantities;
+    private final char size;
+    private final double price;
     private String name;
     private static final Set<List<String>> incompatibleCombinations = new HashSet<>();
 
     static {
-
         incompatibleCombinations.add(Arrays.asList("Milk", "Lemon"));
         incompatibleCombinations.add(Arrays.asList("Fish", "Cheese"));
-
     }
 
-
     public Meal(List<String> ingredients, char size, double price) {
-        this.ingredients = new ArrayList<>(ingredients);
+        this.ingredients = new ArrayList<>(ingredients != null ? ingredients : Collections.emptyList()); // Handle null input
         this.size = size;
         this.price = price;
         this.ingredientQuantities = new HashMap<>();
-
-        if (ingredients != null) {
-            ingredients.forEach(ing -> ingredientQuantities.put(ing, 1));
-        }
-        this.name = "Custom Meal"; // Default name
+        this.ingredients.forEach(ing -> ingredientQuantities.put(ing, 1));
+        this.name = "Custom Meal";
     }
 
     public Meal(String name, List<String> ingredients, char size, double price) {
@@ -36,14 +29,11 @@ public class Meal {
         this.name = name;
     }
 
-
     public Map<String, Integer> getIngredientQuantities() {
         return Collections.unmodifiableMap(ingredientQuantities);
     }
 
     public List<String> getIngredients() {
-        // Return a copy to prevent external modification if desired,
-        // or Collections.unmodifiableList for stricter immutability.
         return new ArrayList<>(ingredients);
     }
 
@@ -52,12 +42,16 @@ public class Meal {
     }
 
     public static List<String> suggestAlternative(String ingredient) {
+
+        String normalizedIngredient = ingredient.toLowerCase();
         Map<String, List<String>> alternatives = Map.of(
-                "Milk", Arrays.asList("Almond Milk", "Oat Milk"),
-                "Lemon", Arrays.asList("Lime", "Orange"),
-                "Fish", Arrays.asList("Tofu", "Mushrooms")
+                "milk", Arrays.asList("Almond Milk", "Oat Milk"),
+                "lemon", Arrays.asList("Lime", "Orange"),
+                "fish", Arrays.asList("Tofu", "Mushrooms"),
+                "shellfish", Arrays.asList("King Oyster Mushrooms", "Artichoke Hearts", "Tofu Puffs"), // Added Shellfish
+                "peanuts", Arrays.asList("Sunflower Seeds", "Almonds (if no nut allergy)", "Pumpkin Seeds") // Added Peanuts for completeness
         );
-        return alternatives.getOrDefault(ingredient, Collections.emptyList());
+        return alternatives.getOrDefault(normalizedIngredient, Collections.emptyList());
     }
 
     public boolean hasIncompatibleIngredients() {
@@ -65,15 +59,12 @@ public class Meal {
             return false;
         }
         for (List<String> pair : incompatibleCombinations) {
-            // Check if the meal's ingredients contain ALL ingredients in an incompatible pair
             if (new HashSet<>(this.ingredients).containsAll(pair)) {
                 return true;
             }
         }
         return false;
     }
-
-
 
     public void setName(String name) {
         this.name = name;
@@ -91,7 +82,6 @@ public class Meal {
         }
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -100,7 +90,6 @@ public class Meal {
         return size == meal.size &&
                 Double.compare(meal.price, price) == 0 &&
                 Objects.equals(name, meal.name) &&
-                // For ingredients, consider order doesn't matter for equality
                 Objects.equals(new HashSet<>(ingredients), new HashSet<>(meal.ingredients));
     }
 

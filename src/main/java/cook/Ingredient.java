@@ -1,26 +1,19 @@
 package cook;
 
-
-import java.util.Objects;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 public class Ingredient {
     private String name;
     private boolean available;
-    private Set<String> dietaryTags; // e.g., "vegan", "gluten-free", "dairy"
-    private List<Ingredient> potentialAlternatives; // Alternatives specific to this ingredient if it's unavailable
+    private final Set<String> dietaryTags;
+    private final List<Ingredient> potentialAlternatives;
 
     public Ingredient(String name) {
-        this.name = name;
-        this.available = true; // Default to available
+        this.name = Objects.requireNonNull(name, "Ingredient name cannot be null");
+        this.available = true;
         this.dietaryTags = new HashSet<>();
         this.potentialAlternatives = new ArrayList<>();
     }
-
-
 
 
     public String getName() {
@@ -32,48 +25,49 @@ public class Ingredient {
     }
 
     public Set<String> getDietaryTags() {
-        return dietaryTags;
+        return Collections.unmodifiableSet(dietaryTags);
     }
 
     public List<Ingredient> getPotentialAlternatives() {
-        return potentialAlternatives;
+        return Collections.unmodifiableList(potentialAlternatives);
     }
 
 
     public void setName(String name) {
-        this.name = name;
+        this.name = Objects.requireNonNull(name, "Ingredient name cannot be null");
     }
 
     public void setAvailable(boolean available) {
         this.available = available;
     }
 
+    // Methods to add tags and alternatives
     public void addDietaryTag(String tag) {
-        this.dietaryTags.add(tag.toLowerCase()); // Store tags consistently
+        dietaryTags.add(tag.toLowerCase());
     }
-
-
 
     public void addPotentialAlternative(Ingredient alternative) {
-        this.potentialAlternatives.add(alternative);
+        if (alternative == null || this.equals(alternative)) {
+            return;
+        }
+        potentialAlternatives.add(alternative);
     }
-
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Ingredient that = (Ingredient) o;
-        return Objects.equals(name, that.name); // Primarily identify by name
+        if (!(o instanceof Ingredient that)) return false;
+        return name.equalsIgnoreCase(that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name); // Primarily identify by name
+        return name.toLowerCase().hashCode();
     }
 
     @Override
     public String toString() {
         return name + (available ? "" : " (Unavailable)");
     }
+
 }

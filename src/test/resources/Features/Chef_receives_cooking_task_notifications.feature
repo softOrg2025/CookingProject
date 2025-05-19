@@ -1,4 +1,6 @@
+
 Feature: Chef receives cooking task notifications
+
   Scenario: Alert when task is created
     Given a task is assigned to me
     When it is saved in the system
@@ -13,5 +15,3 @@ Feature: Chef receives cooking task notifications
     Given my task is rescheduled
     When the update is saved
     Then I should receive a notification about the change
-
-#    done

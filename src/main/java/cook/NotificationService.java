@@ -20,4 +20,5 @@ public class NotificationService {
     public void clearNotifications(String userId) {
         userNotifications.remove(userId);
     }
+
 }

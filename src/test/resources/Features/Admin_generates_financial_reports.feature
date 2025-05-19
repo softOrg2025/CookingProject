@@ -1,3 +1,4 @@
+@FinancialReportsFeature
 Feature: Admin generates financial reports
 
   Scenario: Generate monthly report

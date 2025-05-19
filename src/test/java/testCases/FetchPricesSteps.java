@@ -3,21 +3,26 @@ package testCases;
 import io.cucumber.java.en.*;
 import java.util.*;
 import java.util.logging.Logger;
-import cook.Supplier; // Import the new Supplier class
+import cook.Supplier;
+import cook.InventoryService;
+import cook.InventoryItem;
+import cook.PurchaseOrder;
+import cook.kitchen_manager;
 
 public class FetchPricesSteps {
 
     private static final Logger LOGGER = Logger.getLogger(FetchPricesSteps.class.getName());
-
     private List<Supplier> suppliers;
     private Supplier selectedSupplier;
-
-
+    private InventoryService inventoryService;
+    private kitchen_manager manager;
+    private PurchaseOrder purchaseOrder;
 
     @Given("I am logged in as a manager")
     public void iAmLoggedInAsManager() {
+        inventoryService = new InventoryService();
+        manager = new kitchen_manager("Manager", "manager@example.com", "password", inventoryService);
         LOGGER.info("✅ Manager successfully logged in.");
-
     }
 
     @When("I open the supplier section")
@@ -63,6 +68,8 @@ public class FetchPricesSteps {
 
     @Given("I need to restock an item")
     public void iNeedToRestockAnItem() {
+        inventoryService = new InventoryService();
+        inventoryService.addInventoryItem(new InventoryItem("Olive Oil", 5, 10, 12.5));
         LOGGER.info("📥 Restock request initiated: Olive Oil.");
         suppliers = Arrays.asList(
                 new Supplier("Supplier A", 10.0),
@@ -74,7 +81,6 @@ public class FetchPricesSteps {
     @When("I compare prices")
     public void iComparePrices() {
         if (suppliers == null || suppliers.isEmpty()) {
-
             throw new IllegalStateException("❌ Supplier list is not initialized or is empty!");
         }
 
@@ -83,12 +89,31 @@ public class FetchPricesSteps {
                 .orElse(null);
 
         assert selectedSupplier != null : "❌ No supplier found after comparison (should not happen if list is not empty)!";
+
+        // Create purchase order using InventoryService
+        purchaseOrder = inventoryService.createPurchaseOrderForCriticalStock(
+                "Olive Oil",
+                20,
+                selectedSupplier.getName(),
+                selectedSupplier.getPrice()
+        );
+
         LOGGER.info("🔍 Lowest price found at: " + selectedSupplier.getName());
     }
 
     @Then("I can choose the supplier with the best offer")
     public void iCanChooseBestSupplier() {
         assert selectedSupplier != null : "❌ No supplier selected!";
-        LOGGER.info("✅ Best offer selected from: " + selectedSupplier.getName() + " ($" + selectedSupplier.getPrice() + ")"); // Use getters
+        assert purchaseOrder != null : "❌ No purchase order created!";
+
+        // Send purchase order to supplier
+        boolean orderSent = inventoryService.sendPurchaseOrderToSupplier(purchaseOrder.getOrderId());
+
+        if (orderSent) {
+            LOGGER.info("✅ Best offer selected from: " + selectedSupplier.getName() +
+                    " ($" + selectedSupplier.getPrice() + ") - Order ID: " + purchaseOrder.getOrderId());
+        } else {
+            LOGGER.warning("❌ Failed to send purchase order to supplier");
+        }
     }
 }

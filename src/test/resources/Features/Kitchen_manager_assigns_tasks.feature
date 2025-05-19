@@ -9,9 +9,9 @@ Feature: Kitchen manager assigns tasks
   Scenario: Kitchen manager assigns task based on workload
     Given the kitchen manager is assigning tasks
     When the system suggests a chef with a lighter workload
-    Then the kitchen manager should assign the task to that chef
+    Then the kitchen manager should assign the task to that chef based on workload
 
   Scenario: Kitchen manager assigns task based on expertise
     Given the kitchen manager is assigning tasks
     When the system suggests a chef with relevant expertise
-    Then the kitchen manager should assign the task to that chef
+    Then the kitchen manager should assign the task to that chef based on expertise

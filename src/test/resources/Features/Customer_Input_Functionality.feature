@@ -1,8 +1,8 @@
 Feature: Allow customers to create custom meal requests
 
   As a customer,
-  I want to input my dietary preferences and allergies so that the system
-  can recommend appropriate meals and prevent unwanted ingredients.
+  I want to input my dietary preferences and allergies
+  So that the system can recommend appropriate meals and prevent unwanted ingredients
 
   Scenario: Customer adds dietary preferences
     Given the customer is logged into the system
