@@ -16,14 +16,6 @@ public class PastMealOrdersSteps {
     private Customer customer;
     private ChefOrderHistoryService orderHistoryService;
 
-    public boolean isLoggedIn() {
-        return loggedIn;
-    }
-
-    public void setLoggedIn(boolean loggedIn) {
-        this.loggedIn = loggedIn;
-    }
-
     private static class Order {
         String mealName;
         String orderDate;
@@ -51,14 +43,14 @@ public class PastMealOrdersSteps {
         application.users.add(customer);
         orderHistoryService = new ChefOrderHistoryService();
 
-        // Initialize some test meals
+
         List<Meal> meals = new ArrayList<>();
         meals.add(new Meal("Vegetable Curry", Arrays.asList("Vegetables", "Rice"), 'M', 12.99));
         meals.add(new Meal("Chicken Biryani", Arrays.asList("Chicken", "Rice", "Spices"), 'L', 14.50));
         meals.add(new Meal("Pasta Alfredo", Arrays.asList("Pasta", "Cream", "Cheese"), 'S', 11.75));
         application.meals = meals;
 
-        // Add meals to order history
+
         for (Meal meal : meals) {
             orderHistoryService.addOrder(customer.getEmail(), meal);
         }
