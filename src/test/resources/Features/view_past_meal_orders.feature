@@ -1,3 +1,4 @@
+@PastMealOrdersFeature
 Feature: View Past Meal Orders
   As a registered customer
   I want to view my past meal orders

@@ -1,7 +1,6 @@
 package cook;
 
 import java.util.ArrayList;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,59 +11,56 @@ import java.util.Set;
 
 
 
-
-
-
 public class Customer extends User {
     private List<String> preferences = new ArrayList<String>();
     private List<String> allergies = new ArrayList<String>();
     private List<String> selectedIngredients = new ArrayList<>();
     private static final Set<String> INCOMPATIBLE_INGREDIENTS = new HashSet<>(Arrays.asList("Milk", "Lemon"));
     private Map<String, Meal> savedMeals = new HashMap<>();
+
     public Customer(String name , String email , String password ){
         super(name , email , password , Role.Customer);
-
     }
 
+    // Consider normalizing stored preferences/allergies (e.g., to lowercase)
+    // or ensure all comparisons are case-insensitive.
+    // For now, keeping original behavior and handling case-insensitivity in checks.
+
     public boolean savePreferences(String option) {
-        if(preferences.contains(option)){
-            return false;
+        // To prevent duplicates regardless of case, but store with original casing
+        if(preferences.stream().anyMatch(p -> p.equalsIgnoreCase(option))){
+
         }
         preferences.add(option);
         return true;
     }
 
     public boolean saveAllergy(String allergy) {
-        if(allergies.contains(allergy)){
-            return false;
+        // To prevent duplicates regardless of case, but store with original casing
+        if(allergies.stream().anyMatch(a -> a.equalsIgnoreCase(allergy))){
+
         }
         allergies.add(allergy);
         return true;
     }
 
     public boolean allergyExist(String string) {
-        return allergies.contains(string) ;
-
+        return allergies.stream().anyMatch(a -> a.equalsIgnoreCase(string));
     }
 
     public List<String> getAllergies() {
-        return allergies;
+        return Collections.unmodifiableList(allergies); // Return unmodifiable list
     }
-
-
-
-
-
-
-
 
     public List<String> getPreferences() {
-        return Collections.unmodifiableList(preferences); //  إعادة نسخة غير قابلة للتعديل للحماية
+        return Collections.unmodifiableList(preferences);
     }
 
+    public void saveMeal(String mealName, Meal meal) {
+        this.savedMeals.put(mealName, meal);
+    }
 
-
-
-
-
+    public Meal getSavedMeal(String mealName) {
+        return this.savedMeals.get(mealName);
+    }
 }

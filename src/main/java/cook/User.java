@@ -6,6 +6,7 @@ public class User {
     protected String password;
     protected Role role;
 
+
     public User(String name, String email, String pass, Role role) {
         this.name = name;
         this.email = email;

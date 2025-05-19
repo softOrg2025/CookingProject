@@ -2,9 +2,6 @@ package testCases;
 
 import cook.InventoryItem;
 import cook.InventoryService;
-import io.cucumber.java.en.*;
-import java.util.*;
-
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;

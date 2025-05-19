@@ -1,15 +1,14 @@
 package cook;
 
-
 import java.util.*;
 
-public class chef extends User{
-    private List<String> tasks;
-    private Map<String, Boolean> taskCompletionStatus;
+public class chef extends User {
+    private final List<String> tasks;
+    private final Map<String, Boolean> taskCompletionStatus;
     private String selectedTask;
-    private kitchen_manager kitchenManager;
-    private Map<String, String> taskDetails;
-    private List<String> notifications;
+    private final kitchen_manager kitchenManager;
+    private final Map<String, String> taskDetailsStorage;
+    private final List<String> internalNotifications;
 
 
     public chef(String name, String email, String password, kitchen_manager kitchenManager) {
@@ -17,36 +16,38 @@ public class chef extends User{
         this.tasks = new ArrayList<>();
         this.taskCompletionStatus = new HashMap<>();
         this.kitchenManager = kitchenManager;
-        this.taskDetails = new HashMap<>();
-        this.notifications = new ArrayList<>();
+        this.taskDetailsStorage = new HashMap<>(); // كان اسمه taskDetails
+        this.internalNotifications = new ArrayList<>(); // كان اسمه notifications
     }
+
+
+
 
     public void receiveTask(String taskName) {
-        if (!tasks.contains(taskName)) {
             tasks.add(taskName);
             taskCompletionStatus.put(taskName, false);
+
             receiveNotification("New task assigned: " + taskName);
-        }
     }
 
+
     public void receiveNotification(String message) {
-        notifications.add(message);
-        System.out.println("Chef " + name + " received notification: " + message);
+        this.internalNotifications.add(message);
+
+        System.out.println("Chef " + name + " received internal notification: " + message);
     }
 
     public void selectTask(String taskName) {
-        if (tasks.contains(taskName)) {
             selectedTask = taskName;
-        } else {
-            System.out.println("Task not found: " + taskName);
-        }
+    }
+
+    public List<String> getTasks() {
+        return Collections.unmodifiableList(new ArrayList<>(tasks));
     }
 
     public void completeTask() {
-        if (selectedTask != null) {
             taskCompletionStatus.put(selectedTask, true);
             receiveNotification("Task completed: " + selectedTask);
-        }
     }
 
     public boolean isTaskCompleted(String taskName) {
@@ -57,18 +58,20 @@ public class chef extends User{
         return selectedTask;
     }
 
+
     public String getTaskDetails(String taskName) {
-        if (kitchenManager != null) {
-            return kitchenManager.getTaskDetails(taskName);
-        }
-        return "No task details available";
+            return this.taskDetailsStorage.get(taskName);
     }
+
+
     public void receiveTaskWithDetails(String taskName, String details, String deadline) {
-        receiveTask(taskName);
-        taskDetails.put(taskName, "Details: " + details + " | Deadline: " + deadline);
+
+        if (!tasks.contains(taskName)) {
+            receiveTask(taskName);
+        }
+
+        this.taskDetailsStorage.put(taskName, "Details: " + details + " | Deadline: " + deadline);
+
         receiveNotification("Task details updated for: " + taskName);
     }
-
-
-
 }

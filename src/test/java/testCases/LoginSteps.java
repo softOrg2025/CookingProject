@@ -47,7 +47,7 @@ public class LoginSteps {
         user=app.login(string,string2);
         assertNull(user);
         if(user != null)
-        assertFalse(user.getEmail().equals(string));
+            assertFalse(user.getEmail().equals(string));
     }
 
     @Then("the system should display an error message {string}")

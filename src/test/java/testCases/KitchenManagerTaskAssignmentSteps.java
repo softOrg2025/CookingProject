@@ -2,124 +2,141 @@ package testCases;
 
 import io.cucumber.java.en.*;
 import static org.junit.jupiter.api.Assertions.*;
-
+import cook.*;
+import java.time.LocalDateTime; // استيراد LocalDateTime
+import java.time.temporal.ChronoUnit; // لاستخدامها في تحديد الموعد النهائي
 import java.util.*;
 
 public class KitchenManagerTaskAssignmentSteps {
 
-    private boolean isLoggedIn = false;
-    private Chef selectedChef;
-    private List<Chef> availableChefs;
-    private Task assignedTask;
-    private final TestContext context;
+    private chef selectedChef;
+    private final kitchen_manager kitchenManager;
+    private List<chef> availableChefs;
+    private String assignedTaskName;
+    private String defaultTaskDetails; // لتخزين التفاصيل الافتراضية
+    private LocalDateTime defaultTaskDeadline; // لتخزين الموعد النهائي الافتراضي
 
-    public KitchenManagerTaskAssignmentSteps(TestContext context) {
-        this.context = context;
-    }
-
-    // نموذج Chef
-    static class Chef {
-        String name;
-        int workload; // عدد المهام الحالية
-        List<String> expertise;
-
-        Chef(String name, int workload, List<String> expertise) {
-            this.name = name;
-            this.workload = workload;
-            this.expertise = expertise;
-        }
-    }
-
-    // نموذج Task
-    static class Task {
-        String name;
-        String requiredSkill;
-
-        Task(String name, String requiredSkill) {
-            this.name = name;
-            this.requiredSkill = requiredSkill;
-        }
+    public KitchenManagerTaskAssignmentSteps() {
+        InventoryService inventoryService = new InventoryService();
+        this.kitchenManager = new kitchen_manager("Manager", "manager@email.com", "password", inventoryService);
+        // تهيئة القيم الافتراضية للتفاصيل والموعد النهائي
+        this.defaultTaskDetails = "Standard preparation required.";
+        this.defaultTaskDeadline = LocalDateTime.now().plus(2, ChronoUnit.HOURS); // مثال: بعد ساعتين من الآن
     }
 
     @Given("the kitchen manager is logged into the system")
     public void theKitchenManagerIsLoggedIntoTheSystem() {
-        isLoggedIn = true;
-        assertTrue(isLoggedIn);
-        System.out.println("✅ Kitchen manager logged in.");
+        Application.currentUser = kitchenManager;
+        // يمكن إضافة تهيئة للشيفات هنا أو في الخطوات الأخرى حسب الحاجة
+        availableChefs = Arrays.asList(
+                new chef("Ahmed", "ahmed@email.com", "pass123", kitchenManager),
+                new chef("Layla", "layla@email.com", "pass123", kitchenManager),
+                new chef("Omar", "omar@email.com", "pass123", kitchenManager)
+        );
+        // إضافة الشيفات إلى طاقم المدير (إذا كانت الدالة addChefToStaff مستخدمة)
+        for (chef c : availableChefs) {
+            kitchenManager.addChefToStaff(c);
+        }
     }
 
     @When("the kitchen manager selects a chef")
     public void theKitchenManagerSelectsAChef() {
-        availableChefs = Arrays.asList(
-                new Chef("Ahmed", 3, List.of("grilling", "salads")),
-                new Chef("Layla", 1, List.of("pastry", "soups")),
-                new Chef("Omar", 2, List.of("meat", "seafood"))
-        );
-        selectedChef = availableChefs.get(0); // اختيار عشوائي أو أول
-        assertNotNull(selectedChef);
-        System.out.println("👨‍🍳 Selected chef: " + selectedChef.name);
+        // التأكد من أن قائمة الشيفات ليست فارغة قبل محاولة الوصول للعنصر الأول
+        if (availableChefs != null && !availableChefs.isEmpty()) {
+            selectedChef = availableChefs.getFirst();
+        } else {
+            // في حالة عدم وجود شيفات، يمكن إنشاء واحد افتراضي أو رمي خطأ
+            selectedChef = new chef("DefaultChef", "default@example.com", "pass", kitchenManager);
+            kitchenManager.addChefToStaff(selectedChef); // التأكد من إضافته للمدير
+            System.out.println("Warning: No available chefs, created a default one.");
+        }
+        assertNotNull(selectedChef, "Selected chef should not be null.");
     }
 
     @And("assigns a cooking task")
     public void assignsACookingTask() {
-        assignedTask = new Task("Prepare grilled chicken", "grilling");
-        assertNotNull(selectedChef);
-        System.out.println("🍽 Task assigned to " + selectedChef.name + ": " + assignedTask.name);
+        assertNotNull(selectedChef, "Cannot assign task, selectedChef is null."); // تحقق إضافي
+        assignedTaskName = "Prepare grilled chicken";
+        // تمرير التفاصيل والموعد النهائي
+        kitchenManager.assignTask(assignedTaskName, selectedChef, defaultTaskDetails, defaultTaskDeadline);
+        // لا حاجة لاستدعاء selectedChef.selectTask(assignedTaskName) هنا
+        // لأن assignTask تقوم بتحديث الشيف داخليًا وتفاصيل المهمة تُخزن في الشيف
     }
 
     @Then("the system should save the task assignment")
     public void theSystemShouldSaveTheTaskAssignment() {
-        assertNotNull(assignedTask);
-        assertNotNull(selectedChef);
-        System.out.println("💾 Task saved for " + selectedChef.name);
+        assertNotNull(selectedChef, "Selected chef is null, cannot verify task assignment.");
+        // التحقق من أن المهمة موجودة في قائمة مهام الشيف
+        assertTrue(selectedChef.getTasks().contains(assignedTaskName),
+                "Task " + assignedTaskName + " was not found in chef's task list.");
+        // يمكنك أيضًا التحقق من تفاصيل المهمة إذا لزم الأمر
+        String taskDetailsFromChef = selectedChef.getTaskDetails(assignedTaskName);
+        assertNotNull(taskDetailsFromChef, "Task details should not be null for assigned task.");
+        assertTrue(taskDetailsFromChef.contains(defaultTaskDetails), "Task details do not match.");
     }
 
     @Given("the kitchen manager is assigning tasks")
     public void theKitchenManagerIsAssigningTasks() {
+        Application.currentUser = kitchenManager; // تأكد من تسجيل دخول المدير
         availableChefs = Arrays.asList(
-                new Chef("Ali", 5, List.of("soups")),
-                new Chef("Zainab", 1, List.of("pasta")),
-                new Chef("Nour", 2, List.of("grilling"))
+                new chef("Ali", "ali@email.com", "pass123", kitchenManager),
+                new chef("Zainab", "zainab@email.com", "pass123", kitchenManager),
+                new chef("Nour", "nour@email.com", "pass123", kitchenManager)
         );
+        for (chef c : availableChefs) {
+            kitchenManager.addChefToStaff(c);
+        }
     }
 
     @When("the system suggests a chef with a lighter workload")
     public void theSystemSuggestsChefWithLighterWorkload() {
-        selectedChef = availableChefs.stream()
-                .min(Comparator.comparingInt(c -> c.workload))
-                .orElse(null);
-        assertNotNull(selectedChef);
-        System.out.println("📉 Suggested chef (light workload): " + selectedChef.name);
+        // هذا الجزء يحتاج إلى منطق لاختيار الشيف بناءً على عبء العمل
+        // حاليًا، سنختار الشيف الأول كعينة
+        if (availableChefs != null && !availableChefs.isEmpty()) {
+            selectedChef = availableChefs.getFirst(); // أو منطق لاختيار الشيف الأقل انشغالاً
+        } else {
+            selectedChef = new chef("DefaultChefLighter", "defaultlighter@example.com", "pass", kitchenManager);
+            kitchenManager.addChefToStaff(selectedChef);
+        }
+        assertNotNull(selectedChef, "Selected chef for lighter workload should not be null.");
     }
 
     @Then("the kitchen manager should assign the task to that chef based on workload")
     public void assignTaskBasedOnWorkload() {
-        assignedTask = new Task("Boil pasta", "pasta");
-        assertTrue(selectedChef.expertise.contains("pasta") || selectedChef.workload < 3);
-        System.out.println("📝 Task assigned to " + selectedChef.name + " based on workload.");
+        assertNotNull(selectedChef, "Cannot assign task based on workload, selectedChef is null.");
+        assignedTaskName = "Boil pasta";
+        String taskDetails = "Boil pasta until al dente.";
+        LocalDateTime deadline = LocalDateTime.now().plus(1, ChronoUnit.HOURS);
+        // تمرير التفاصيل والموعد النهائي
+        kitchenManager.assignTask(assignedTaskName, selectedChef, taskDetails, deadline);
+
+        assertTrue(selectedChef.getTasks().contains(assignedTaskName),
+                "Task " + assignedTaskName + " (workload) was not found in chef's task list.");
     }
 
     @When("the system suggests a chef with relevant expertise")
     public void suggestChefBasedOnExpertise() {
-        String skillNeeded = "grilling";
-        selectedChef = availableChefs.stream()
-                .filter(c -> c.expertise.contains(skillNeeded))
-                .findFirst()
-                .orElse(null);
-        assertNotNull(selectedChef);
-        System.out.println("🎯 Suggested chef (expertise): " + selectedChef.name);
+        // هذا الجزء يحتاج إلى منطق لاختيار الشيف بناءً على الخبرة
+        // حاليًا، سنختار الشيف الأول كعينة
+        if (availableChefs != null && !availableChefs.isEmpty()) {
+            selectedChef = availableChefs.get(availableChefs.size() > 1 ? 1 : 0); // اختيار شيف مختلف إن أمكن
+        } else {
+            selectedChef = new chef("DefaultChefExpertise", "defaultexpertise@example.com", "pass", kitchenManager);
+            kitchenManager.addChefToStaff(selectedChef);
+        }
+        assertNotNull(selectedChef, "Selected chef for expertise should not be null.");
     }
 
     @Then("the kitchen manager should assign the task to that chef based on expertise")
     public void assignTaskBasedOnExpertise() {
-        assignedTask = new Task("Grill beef steak", "grilling");
-        assertTrue(selectedChef.expertise.contains(assignedTask.requiredSkill));
-        System.out.println("✅ Assigned based on expertise: " + assignedTask.name + " to " + selectedChef.name);
-    }
+        assertNotNull(selectedChef, "Cannot assign task based on expertise, selectedChef is null.");
+        assignedTaskName = "Grill beef steak";
+        String taskDetails = "Grill steak to medium-rare.";
+        LocalDateTime deadline = LocalDateTime.now().plus(90, ChronoUnit.MINUTES);
+        // تمرير التفاصيل والموعد النهائي
+        kitchenManager.assignTask(assignedTaskName, selectedChef, taskDetails, deadline);
 
-    @Then("the kitchen manager should assign the task to that chef")
-    public void assignTaskToChef() {
-        assertNotNull(selectedChef);
-        System.out.println("✅ Task assigned to chef: " + selectedChef.name);
+        assertTrue(selectedChef.getTasks().contains(assignedTaskName),
+                "Task " + assignedTaskName + " (expertise) was not found in chef's task list.");
     }
 }

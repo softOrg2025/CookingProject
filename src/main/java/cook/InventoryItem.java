@@ -6,7 +6,6 @@ public class InventoryItem {
     private int threshold;
     private double unitPrice;
 
-
     public InventoryItem(String ingredientName, int quantity, int threshold, double unitPrice) {
         this.ingredientName = ingredientName;
         this.quantity = quantity;
@@ -45,7 +44,5 @@ public class InventoryItem {
         quantity -= amount;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
+
 }
