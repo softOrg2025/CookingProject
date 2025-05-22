@@ -6,7 +6,6 @@ import io.cucumber.java.en.*;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class OrderHistoryTests {
     private ChefOrderHistoryService orderHistoryService;
@@ -21,7 +20,7 @@ public class OrderHistoryTests {
         orderHistoryService = new ChefOrderHistoryService();
         meals = new ArrayList<>();
 
-        // Initialize sample meals
+
         meals.add(new Meal("Beef Burger", List.of("Beef", "Bun", "Lettuce"), 'M', 30.00));
         meals.add(new Meal("Grilled Chicken", List.of("Chicken", "Spices"), 'M', 28.50));
         meals.add(new Meal("Chicken Shawarma", List.of("Chicken", "Garlic", "Bread"), 'M', 25.0));
@@ -37,7 +36,7 @@ public class OrderHistoryTests {
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("Meal not found: " + mealName));
 
-        // Verify price if needed
+
         double expectedPrice = Double.parseDouble(priceString);
         Assertions.assertEquals(expectedPrice, pendingMeal.getPrice(), 0.01, "Price mismatch for " + mealName);
     }
@@ -75,11 +74,11 @@ public class OrderHistoryTests {
 
     @Given("the system has access to customer order history")
     public void the_system_has_access_to_customer_order_history() {
-        // Create test customers
+
         Customer customer1 = new Customer("Ali Hassan", "ali@example.com", "password");
         Customer customer2 = new Customer("Fatima Omer", "fatima@example.com", "password");
 
-        // Add multiple orders including repeated ones
+
         orderHistoryService.addOrder(customer1.getEmail(), meals.get(2)); // Chicken Shawarma
         orderHistoryService.addOrder(customer2.getEmail(), meals.get(0)); // Beef Burger
         orderHistoryService.addOrder(customer1.getEmail(), meals.get(2)); // Chicken Shawarma again
@@ -88,8 +87,7 @@ public class OrderHistoryTests {
 
     @When("the system analyzes the data")
     public void the_system_analyzes_the_data() {
-        // This would normally come from all customers' order history
-        // Simplified for test purposes
+
         orderTrends = new HashMap<>();
         orderTrends.put("Chicken Shawarma", 3L);
         orderTrends.put("Beef Burger", 1L);

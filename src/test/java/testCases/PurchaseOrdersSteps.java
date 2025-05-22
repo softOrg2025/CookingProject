@@ -5,10 +5,10 @@ import cook.InventoryService;
 import cook.PurchaseOrder;
 
 import io.cucumber.java.en.*;
-import io.cucumber.datatable.DataTable; //  مهم: استيراد DataTable
+import io.cucumber.datatable.DataTable;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Map; //  مهم: لاستخدام DataTable كـ Map
+import java.util.Map;
 
 public class PurchaseOrdersSteps {
 

@@ -37,16 +37,15 @@ public class FinancialReportsSteps {
 
     private String exportedFileName;
 
-    // Define the directory NAME only. No slashes here.
-    // Paths.get() will handle adding the correct OS-specific separator.
-    private static final String DOWNLOADS_DIR_NAME = "test_downloads"; // <<<<<< PLATFORM-NEUTRAL
-    private final TestContext testContext; // Assuming TestContext is defined elsewhere
+
+    private static final String DOWNLOADS_DIR_NAME = "test_downloads";
+    private final TestContext testContext;
 
     public FinancialReportsSteps(TestContext context) {
         this.testContext = context;
     }
 
-    // (initializeMockData and addMealForCustomer methods remain the same as your original)
+
     private static void initializeMockData() {
         Application.users.clear();
         Application.meals.clear();
@@ -88,12 +87,12 @@ public class FinancialReportsSteps {
         }
 
 
-        Path downloadsDirPath = Paths.get(DOWNLOADS_DIR_NAME); // <<<<<< PLATFORM-INDEPENDENT
+        Path downloadsDirPath = Paths.get(DOWNLOADS_DIR_NAME);
 
 
         if (!Files.exists(downloadsDirPath)) {
             try {
-                Files.createDirectories(downloadsDirPath); // Creates parent directories if needed
+                Files.createDirectories(downloadsDirPath);
                 Assertions.assertTrue(Files.exists(downloadsDirPath),
                         "Downloads directory should be created at: " + downloadsDirPath.toAbsolutePath());
             } catch (IOException e) {
@@ -103,7 +102,7 @@ public class FinancialReportsSteps {
             }
         }
         initializeMockData();
-        ensureTestCustomerExists("Ali Khan"); // Ensure this key customer for tests exists
+        ensureTestCustomerExists("Ali Khan");
     }
 
     private void ensureTestCustomerExists(String customerName) {
@@ -115,7 +114,7 @@ public class FinancialReportsSteps {
                     customerName.toLowerCase(Locale.ROOT).replace(" ", ".") + "@example.com",
                     "password");
             Application.users.add(testCustomer);
-            // Add specific meals if this customer is key for certain tests
+
             if ("Ali Khan".equals(customerName)) {
                 addMealForCustomer(testCustomer, "Grilled Fish", List.of("Fish", "Salad"), 'S', 18.00);
                 addMealForCustomer(testCustomer, "Kebab Special", List.of("Kebab", "Bread"), 'L', 22.00);
@@ -126,7 +125,7 @@ public class FinancialReportsSteps {
     @Given("I am a system administrator")
     public void iAmASystemAdministrator() {
         currentAdmin = new User("Admin User", "admin@system.com", "adminPass", Role.manager);
-        Application.currentUser = currentAdmin; // Make sure this is how your app sets the current user
+        Application.currentUser = currentAdmin;
         Assertions.assertEquals(Role.manager, currentAdmin.getRole(), "User should have admin role");
     }
 
@@ -141,11 +140,11 @@ public class FinancialReportsSteps {
 
     @Then("the system should show total income and orders for that period")
     public void theSystemShouldShowTotalIncomeAndOrders() {
-        // Ensure Application.meals has data reflective of the date range or test setup
+
         List<Meal> mealsInPeriod = Application.meals.stream()
-                // This filter seems specific; ensure it aligns with your test data and intent
+
                 .filter(meal -> !meal.getName().contains("Pasta Special - Ahmed Omar"))
-                .collect(Collectors.toList());
+                .toList();
 
         calculatedTotalIncome = mealsInPeriod.stream().mapToDouble(Meal::getPrice).sum();
         calculatedOrderCount = mealsInPeriod.size();
@@ -160,11 +159,11 @@ public class FinancialReportsSteps {
 
     @Given("I select the customer {string}")
     public void iSelectTheCustomer(String customerName) {
-        ensureTestCustomerExists(customerName); // Important to ensure data integrity for the test
+        ensureTestCustomerExists(customerName);
 
         selectedCustomerForReport = Application.users.stream()
                 .filter(u -> u instanceof Customer && u.getName().equals(customerName))
-                .map(u -> (Customer) u) // Cast to Customer
+                .map(u -> (Customer) u)
                 .findFirst()
                 .orElse(null);
 
@@ -172,7 +171,7 @@ public class FinancialReportsSteps {
 
         if (testContext != null) {
             testContext.lastSystemMessage = "Selected customer for report: " +
-                    (selectedCustomerForReport != null ? selectedCustomerForReport.getName() : "null");
+                    selectedCustomerForReport.getName();
         }
     }
 
@@ -216,8 +215,8 @@ public class FinancialReportsSteps {
 
     @Given("a financial report for {string} is generated")
     public void aFinancialReportForCustomerIsGenerated(String customerName) {
-        iSelectTheCustomer(customerName); // Reuse existing steps
-        iRunTheReport();                  // Reuse existing steps
+        iSelectTheCustomer(customerName);
+        iRunTheReport();
         Assertions.assertTrue(customerReportGenerated, "Customer report should have been generated for " + customerName);
 
         if (testContext != null) {
@@ -233,14 +232,13 @@ public class FinancialReportsSteps {
 
         exportedFileName = selectedCustomerForReport.getName().replace(" ", "_") + "_Report.csv";
 
-        // Construct the Path to the file within the downloads directory.
-        // Paths.get(baseDirectoryName, fileName) is the platform-independent way.
-        Path reportFilePath = Paths.get(DOWNLOADS_DIR_NAME, exportedFileName); // <<<<<< PLATFORM-INDEPENDENT
 
-        try (FileWriter writer = new FileWriter(reportFilePath.toFile())) { // Convert Path to File for FileWriter
-            writer.write("Customer,Meal,Price\n"); // CSV Header
+        Path reportFilePath = Paths.get(DOWNLOADS_DIR_NAME, exportedFileName);
+
+        try (FileWriter writer = new FileWriter(reportFilePath.toFile())) {
+            writer.write("Customer,Meal,Price\n");
             for (Meal meal : customerTransactions) {
-                writer.write(String.format(Locale.US, "%s,%s,%.2f\n", // Use Locale.US for consistent decimal format
+                writer.write(String.format(Locale.US, "%s,%s,%.2f\n",
                         selectedCustomerForReport.getName(),
                         meal.getName(),
                         meal.getPrice()));
@@ -258,8 +256,8 @@ public class FinancialReportsSteps {
         Assertions.assertNotNull(exportedFileName, "exportedFileName was not set. Was 'Export' step run?");
         Assertions.assertEquals(expectedFileName, exportedFileName, "The generated exportedFileName does not match expectedFileName.");
 
-        Path expectedFilePath = Paths.get(DOWNLOADS_DIR_NAME, expectedFileName); // <<<<<< PLATFORM-INDEPENDENT
-        File file = expectedFilePath.toFile(); // Convert to File for exists() check
+        Path expectedFilePath = Paths.get(DOWNLOADS_DIR_NAME, expectedFileName);
+        File file = expectedFilePath.toFile();
 
         Assertions.assertTrue(file.exists(), "File should exist at: " + file.getAbsolutePath());
         Assertions.assertTrue(file.isFile(), "Path should point to a file: " + file.getAbsolutePath());
@@ -272,14 +270,14 @@ public class FinancialReportsSteps {
     @Then("it should contain total income and all transactions")
     public void itShouldContainTotalIncomeAndAllTransactions() {
         Assertions.assertNotNull(exportedFileName, "exportedFileName is null. Was the report exported?");
-        Path filePath = Paths.get(DOWNLOADS_DIR_NAME, exportedFileName); // <<<<<< PLATFORM-INDEPENDENT
+        Path filePath = Paths.get(DOWNLOADS_DIR_NAME, exportedFileName);
         File file = filePath.toFile();
 
         Assertions.assertTrue(file.exists(), "CSV file not found for verification: " + file.getAbsolutePath());
 
         int actualTransactionLines = 0;
-        try (Scanner scanner = new Scanner(file)) { // Scanner is fine for reading text files
-            // Verify header
+        try (Scanner scanner = new Scanner(file)) {
+
             if (scanner.hasNextLine()) {
                 String header = scanner.nextLine();
                 Assertions.assertEquals("Customer,Meal,Price", header, "CSV header mismatch.");
@@ -304,4 +302,5 @@ public class FinancialReportsSteps {
             Assertions.fail("Failed to read CSV file (" + file.getAbsolutePath() + ") for verification: " + e.getMessage(), e);
         }
     }
+
 }

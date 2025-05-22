@@ -14,24 +14,22 @@ public class ChefOrderHistorySteps {
     private String lastSuggestion;
     private List<Meal> displayedOrderHistory;
     private List<String> frequentMeals;
-    private List<String> customerPreferences;
-    private Meal testMeal1, testMeal2, testMeal3, testMeal4;
 
-    // دوال مساعدة للفحص
+
     private boolean isUserLoggedIn(User user) {
         return user != null && user.getEmail().equals(chefUser.getEmail());
     }
 
     private boolean containsMeal(List<Meal> meals, Meal target) {
-        return meals != null && meals.contains(target);
+        return meals == null || !meals.contains(target);
     }
 
     private boolean listContains(List<String> list, String item) {
-        return list != null && list.contains(item);
+        return list == null || !list.contains(item);
     }
 
     private boolean isListEmpty(List<?> list) {
-        return list != null && list.isEmpty();
+        return list == null || !list.isEmpty();
     }
 
     @Given("the chef is logged into the system")
@@ -60,10 +58,10 @@ public class ChefOrderHistorySteps {
     public void theSystemShouldDisplayTheCustomersOrderHistory() {
         orderHistoryService = new ChefOrderHistoryService();
 
-        testMeal1 = new Meal("Pasta", Arrays.asList("Pasta", "Tomato Sauce"), 'M', 12.99);
-        testMeal2 = new Meal("Pasta", Arrays.asList("Pasta", "Tomato Sauce"), 'M', 12.99);
-        testMeal3 = new Meal("Salad", Arrays.asList("Lettuce", "Tomato"), 'S', 8.99);
-        testMeal4 = new Meal("Burger", Arrays.asList("Bun", "Beef Patty"), 'L', 15.99);
+        Meal testMeal1 = new Meal("Pasta", Arrays.asList("Pasta", "Tomato Sauce"), 'M', 12.99);
+        Meal testMeal2 = new Meal("Pasta", Arrays.asList("Pasta", "Tomato Sauce"), 'M', 12.99);
+        Meal testMeal3 = new Meal("Salad", Arrays.asList("Lettuce", "Tomato"), 'S', 8.99);
+        Meal testMeal4 = new Meal("Burger", Arrays.asList("Bun", "Beef Patty"), 'L', 15.99);
 
         orderHistoryService.addOrder(selectedCustomerId, testMeal1);
         orderHistoryService.addOrder(selectedCustomerId, testMeal2);
@@ -73,9 +71,9 @@ public class ChefOrderHistorySteps {
         displayedOrderHistory = orderHistoryService.getCustomerOrderHistory(selectedCustomerId);
 
         if (displayedOrderHistory == null || displayedOrderHistory.size() != 4 ||
-                !containsMeal(displayedOrderHistory, testMeal1) ||
-                !containsMeal(displayedOrderHistory, testMeal3) ||
-                !containsMeal(displayedOrderHistory, testMeal4)) {
+                containsMeal(displayedOrderHistory, testMeal1) ||
+                containsMeal(displayedOrderHistory, testMeal3) ||
+                containsMeal(displayedOrderHistory, testMeal4)) {
             throw new AssertionError("Order history display failed");
         }
     }
@@ -90,7 +88,7 @@ public class ChefOrderHistorySteps {
     @When("the chef identifies frequently ordered meals")
     public void theChefIdentifiesFrequentOrderedMeals() {
         frequentMeals = orderHistoryService.identifyFrequentMeals(selectedCustomerId);
-        if (frequentMeals == null || frequentMeals.size() != 1 || !listContains(frequentMeals, "Pasta")) {
+        if (frequentMeals == null || frequentMeals.size() != 1 || listContains(frequentMeals, "Pasta")) {
             throw new AssertionError("Frequent meals identification failed");
         }
     }
@@ -106,15 +104,15 @@ public class ChefOrderHistorySteps {
     @When("the chef notices a pattern in meal choices")
     public void theChefNoticesAPatternInMealChoices() {
         orderHistoryService.analyzePreferences(selectedCustomerId);
-        customerPreferences = orderHistoryService.getCustomerPreferences(selectedCustomerId);
+        List<String> customerPreferences = orderHistoryService.getCustomerPreferences(selectedCustomerId);
 
         if (customerPreferences == null ||
-                !listContains(customerPreferences, "Pasta") ||
-                !listContains(customerPreferences, "Tomato Sauce") ||
-                !listContains(customerPreferences, "Lettuce") ||
-                !listContains(customerPreferences, "Tomato") ||
-                !listContains(customerPreferences, "Bun") ||
-                !listContains(customerPreferences, "Beef Patty")) {
+                listContains(customerPreferences, "Pasta") ||
+                listContains(customerPreferences, "Tomato Sauce") ||
+                listContains(customerPreferences, "Lettuce") ||
+                listContains(customerPreferences, "Tomato") ||
+                listContains(customerPreferences, "Bun") ||
+                listContains(customerPreferences, "Beef Patty")) {
             throw new AssertionError("Preferences analysis failed");
         }
     }
@@ -136,7 +134,7 @@ public class ChefOrderHistorySteps {
 
     @Then("the system should display an empty order history")
     public void theSystemShouldDisplayAnEmptyOrderHistory() {
-        if (!isListEmpty(displayedOrderHistory)) {
+        if (isListEmpty(displayedOrderHistory)) {
             throw new AssertionError("Empty order history check failed");
         }
     }
@@ -148,7 +146,7 @@ public class ChefOrderHistorySteps {
 
     @Then("the system should return an empty list of frequent meals")
     public void theSystemShouldReturnAnEmptyListOfFrequentMeals() {
-        if (!isListEmpty(frequentMeals)) {
+        if (isListEmpty(frequentMeals)) {
             throw new AssertionError("Empty frequent meals check failed");
         }
     }

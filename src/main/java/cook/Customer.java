@@ -19,12 +19,8 @@ public class Customer extends User {
         super(name, email, password, Role.Customer);
     }
 
-// Consider normalizing stored preferences/allergies (e.g., to lowercase)
-// or ensure all comparisons are case-insensitive.
-// For now, keeping original behavior and handling case-insensitivity in checks.
-
     public boolean savePreferences(String option) {
-        // To prevent duplicates regardless of case, but store with original casing
+
         if (preferences.stream().anyMatch(p -> p.equalsIgnoreCase(option))) {
 
         }
@@ -33,7 +29,6 @@ public class Customer extends User {
     }
 
     public boolean saveAllergy(String allergy) {
-        // To prevent duplicates regardless of case, but store with original casing
         if (allergies.stream().anyMatch(a -> a.equalsIgnoreCase(allergy))) {
 
         }
@@ -61,12 +56,12 @@ public class Customer extends User {
         return this.savedMeals.get(mealName);
     }
 
-    // في كلاس Customer أضف هذه الدالة:
+
     public Map<String, Meal> getSavedMeals() {
-        return Collections.unmodifiableMap(savedMeals); // إرجاع نسخة غير قابلة للتعديل
+        return Collections.unmodifiableMap(savedMeals);
     }
 
-    // ثم عدّل الدالة viewSavedMeals كالتالي:
+
 
 
 }

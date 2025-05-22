@@ -41,7 +41,7 @@ public class Ingredient {
         this.available = available;
     }
 
-    // Methods to add tags and alternatives
+
     public void addDietaryTag(String tag) {
         dietaryTags.add(tag.toLowerCase());
     }

@@ -15,13 +15,12 @@ public class FetchPricesSteps {
     private List<Supplier> suppliers;
     private Supplier selectedSupplier;
     private InventoryService inventoryService;
-    private kitchen_manager manager;
     private PurchaseOrder purchaseOrder;
 
     @Given("I am logged in as a manager")
     public void iAmLoggedInAsManager() {
         inventoryService = new InventoryService();
-        manager = new kitchen_manager("Manager", "manager@example.com", "password", inventoryService);
+        new kitchen_manager("Manager", "manager@example.com", "password", inventoryService);
         LOGGER.info("✅ Manager successfully logged in.");
     }
 
@@ -87,8 +86,6 @@ public class FetchPricesSteps {
         selectedSupplier = suppliers.stream()
                 .min(Comparator.comparingDouble(Supplier::getPrice))
                 .orElse(null);
-
-        assert selectedSupplier != null : "❌ No supplier found after comparison (should not happen if list is not empty)!";
 
         // Create purchase order using InventoryService
         purchaseOrder = inventoryService.createPurchaseOrderForCriticalStock(

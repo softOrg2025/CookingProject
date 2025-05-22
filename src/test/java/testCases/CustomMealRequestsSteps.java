@@ -15,13 +15,11 @@ import java.util.ArrayList;
 public class CustomMealRequestsSteps {
 
     private Customer currentCustomer;
-    private String confirmationMessage;
     private List<Meal> suggestedMeals;
 
     @Before("@CustomMealFeature")
     public void setUpCustomMealScenario() {
         currentCustomer = null;
-        confirmationMessage = null;
         suggestedMeals = null;
         Application.lastSystemMessage = null;
         Application.notificationService.clearNotifications("system");
@@ -75,20 +73,13 @@ public class CustomMealRequestsSteps {
             currentCustomer = (Customer) Application.currentUser;
         }
 
-        assertNotNull(Application.notificationService.getNotifications(currentCustomer.getEmail()).contains("User logged in"));
+        Application.notificationService.getNotifications(currentCustomer.getEmail());
     }
 
     @When("the customer selects {string} from the profile menu")
     public void selectFromProfileMenu(String menuOption) {
         Application.setSystemMessage("Selected option: " + menuOption);
         assertNotNull(Application.getSystemMessage());
-
-
-        if (menuOption.equals("Dietary Preferences")) {
-
-        } else if (menuOption.equals("Allergies")) {
-
-        }
     }
 
     @When("the customer inputs {string} as their dietary preference")

@@ -3,10 +3,10 @@ package cook;
 public class PurchaseOrder {
     private String ingredientName;
     private int quantity;
-    private String supplierName; // أو كائن Supplier
+    private String supplierName;
     private double pricePerUnit;
     private double totalPrice;
-    private String orderId; // معرّف فريد لأمر الشراء
+    private String orderId;
 
     public PurchaseOrder(String ingredientName, int quantity, String supplierName, double pricePerUnit) {
         this.ingredientName = ingredientName;
@@ -15,10 +15,10 @@ public class PurchaseOrder {
         this.pricePerUnit = pricePerUnit;
 
         this.totalPrice = this.quantity * this.pricePerUnit;
-        this.orderId = "PO-" + System.currentTimeMillis(); // مثال بسيط لمعرف فريد
+        this.orderId = "PO-" + System.currentTimeMillis();
     }
 
-    // Getters
+
     public String getIngredientName() { return ingredientName; }
     public int getQuantity() { return quantity; }
     public String getSupplierName() { return supplierName; }

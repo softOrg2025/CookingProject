@@ -6,11 +6,8 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 import io.cucumber.datatable.DataTable;
@@ -112,7 +109,6 @@ public class MealCustomizationSteps {
         updateSharedCurrentMealWithName(mealName);
         Assertions.assertNotNull(testContext.sharedCurrentMeal, "Shared meal in context should not be null before saving.");
 
-        // Assuming Customer class has a method to save meals
         customer.saveMeal(mealName, testContext.sharedCurrentMeal);
         Meal savedMeal = customer.getSavedMeal(mealName);
         Assertions.assertNotNull(savedMeal, "Meal should be saved in customer's saved meals.");

@@ -13,7 +13,6 @@ public class ChefTaskNotificationsSteps {
 
     private chef currentChef;
     private kitchen_manager kitchenManager;
-    private InventoryService inventoryService;
     private NotificationService notificationService;
 
     private static final String TEST_TASK_NAME = "Prepare Special Dish";
@@ -22,7 +21,7 @@ public class ChefTaskNotificationsSteps {
 
     @Before
     public void setUp() {
-        inventoryService = new InventoryService();
+        InventoryService inventoryService = new InventoryService();
         notificationService = new NotificationService();
         Application.notificationService = notificationService;
 
@@ -43,29 +42,26 @@ public class ChefTaskNotificationsSteps {
         taskDetailsForTest = "Prepare " + TEST_TASK_NAME + " according to recipe standards";
         notificationService.clearNotifications(currentChef.getEmail());
 
-        // Test chef functions
+
         currentChef.receiveTask("Initial Task");
         currentChef.receiveNotification("Initial Notification");
         currentChef.selectTask("Initial Task");
-        boolean isCompleted = currentChef.isTaskCompleted("Initial Task");
-        String selectedTask = currentChef.getSelectedTask();
-        String taskDetails = currentChef.getTaskDetails("Initial Task");
+        currentChef.isTaskCompleted("Initial Task");
+        currentChef.getTaskDetails("Initial Task");
 
-        // Test Application functions
+
         Application.setSystemMessage("Initial message");
-        String systemMessage = Application.getSystemMessage();
     }
 
     @When("it is saved in the system")
     public void it_is_saved_in_the_system() {
         kitchenManager.assignTask(TEST_TASK_NAME, currentChef, taskDetailsForTest, taskDeadline);
 
-        // Test chef functions after assignment
+
         currentChef.receiveTaskWithDetails(TEST_TASK_NAME, taskDetailsForTest,
                 taskDeadline.format(DateTimeFormatter.ofPattern("hh:mm a")));
 
-        // Test kitchen manager functions
-        String managerTaskDetails = kitchenManager.getTaskDetails(TEST_TASK_NAME);
+        kitchenManager.getTaskDetails(TEST_TASK_NAME);
     }
 
     @Then("I should receive a notification")
@@ -81,7 +77,7 @@ public class ChefTaskNotificationsSteps {
         assertTrue(notifications.stream().anyMatch(notification -> notification.equals(expectedMessage)),
                 "Expected notification not found.");
 
-        // Test task completion
+
         currentChef.selectTask(TEST_TASK_NAME);
         currentChef.completeTask();
         boolean isTaskCompleted = currentChef.isTaskCompleted(TEST_TASK_NAME);
@@ -96,7 +92,7 @@ public class ChefTaskNotificationsSteps {
         notificationService.clearNotifications(currentChef.getEmail());
         kitchenManager.assignTask(TEST_TASK_NAME, currentChef, taskDetailsForTest, taskDeadline);
 
-        // Test getting task list
+
         List<String> tasks = currentChef.getTasks();
         assertTrue(tasks.contains(TEST_TASK_NAME), "Task should be in chef's task list");
     }
@@ -147,7 +143,7 @@ public class ChefTaskNotificationsSteps {
         assertTrue(notifications.stream().anyMatch(notification -> notification.equals(expectedChangeMessage)),
                 "Expected change notification not found.");
 
-        // Test getting updated task details
+
         String updatedDetails = currentChef.getTaskDetails(TEST_TASK_NAME);
         assertNotNull(updatedDetails, "Task details should be available");
     }
