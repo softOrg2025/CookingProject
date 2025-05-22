@@ -24,10 +24,10 @@ public class chef extends User {
 
 
     public void receiveTask(String taskName) {
-            tasks.add(taskName);
-            taskCompletionStatus.put(taskName, false);
+        tasks.add(taskName);
+        taskCompletionStatus.put(taskName, false);
 
-            receiveNotification("New task assigned: " + taskName);
+        receiveNotification("New task assigned: " + taskName);
     }
 
 
@@ -38,7 +38,7 @@ public class chef extends User {
     }
 
     public void selectTask(String taskName) {
-            selectedTask = taskName;
+        selectedTask = taskName;
     }
 
     public List<String> getTasks() {
@@ -46,8 +46,8 @@ public class chef extends User {
     }
 
     public void completeTask() {
-            taskCompletionStatus.put(selectedTask, true);
-            receiveNotification("Task completed: " + selectedTask);
+        taskCompletionStatus.put(selectedTask, true);
+        receiveNotification("Task completed: " + selectedTask);
     }
 
     public boolean isTaskCompleted(String taskName) {
@@ -60,7 +60,7 @@ public class chef extends User {
 
 
     public String getTaskDetails(String taskName) {
-            return this.taskDetailsStorage.get(taskName);
+        return this.taskDetailsStorage.get(taskName);
     }
 
 

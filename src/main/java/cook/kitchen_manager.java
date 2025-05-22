@@ -1,15 +1,12 @@
 package cook;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-
 public class kitchen_manager extends User {
-    private Map<String, String> taskDetails; // TaskName -> "Description: ... | Deadline: ..."
-    private InventoryService inventoryService;
-    private List<chef> kitchenStaff; // تأكد من وجود هذا الحقل
-    private Map<String, chef> taskAssignments; // TaskName -> Chef
-
+    private final Map<String, String> taskDetails; // TaskName -> "Description: ... | Deadline: ..."
+    InventoryService inventoryService;
+    private final List<chef> kitchenStaff; // تأكد من وجود هذا الحقل
+    private final Map<String, chef> taskAssignments; // TaskName -> Chef
     public kitchen_manager(String name, String email, String password, InventoryService inventoryService) {
         super(name, email, password, Role.manager);
         this.taskDetails = new HashMap<>();
@@ -18,14 +15,14 @@ public class kitchen_manager extends User {
         this.taskAssignments = new HashMap<>();
     }
 
-    // دالة لإضافة شيف للطاقم
+
     public void addChefToStaff(chef c) {
         if (c != null && !kitchenStaff.contains(c)) {
             kitchenStaff.add(c);
         }
     }
 
-    // تأكد أن هذه الدالة تقبل 4 وسطاء
+
     public void assignTask(String taskName, chef assignedChef, String details, LocalDateTime deadlineDateTime) {
         String deadlineFormatted = deadlineDateTime.format(DateTimeFormatter.ofPattern("hh:mm a"));
         String fullTaskDetails = "Description: " + details + " | Deadline: " + deadlineFormatted;
@@ -42,7 +39,7 @@ public class kitchen_manager extends User {
         System.out.println("Assigned task: " + taskName + " to chef " + assignedChef.getName() + " and sent notification via Application Service.");
     }
 
-    // تأكد أن هذه الدالة موجودة وتقبل 4 وسطاء
+
     public void rescheduleTask(String taskName, chef assignedChef, String newDetails, LocalDateTime newDeadlineDateTime) {
         if (taskAssignments.containsKey(taskName) && taskAssignments.get(taskName).equals(assignedChef)) {
             String newDeadlineFormatted = newDeadlineDateTime.format(DateTimeFormatter.ofPattern("hh:mm a"));
@@ -64,4 +61,5 @@ public class kitchen_manager extends User {
     public String getTaskDetails(String taskName) {
         return taskDetails.getOrDefault(taskName, "No details available for: " + taskName);
     }
+
 }

@@ -3,7 +3,7 @@ package cook;
 import java.util.*;
 
 public class NotificationService {
-    private Map<String, List<String>> userNotifications;
+    private final Map<String, List<String>> userNotifications;
 
     public NotificationService() {
         this.userNotifications = new HashMap<>();

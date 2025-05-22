@@ -14,13 +14,6 @@ public class User {
         this.role = role;
     }
 
-    public User() {
-        this.name = "name"; //  من الأفضل تهيئة كل الحقول
-        this.email = "email";
-        this.password = "pass"; //  وكذلك هذا
-        this.role = Role.Customer; //  أو أي دور افتراضي
-    }
-
     // --- هذا هو الميثود المطلوب ---
     public String getName() {
         return name;

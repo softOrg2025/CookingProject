@@ -5,11 +5,14 @@ import java.util.List;
 
 public class Application {
     public static List<User> users = new ArrayList<User>();
-    public static User currentUser = new User(); // Default user instance
+    public static User currentUser = null;
     public static List<Meal> meals = new ArrayList<Meal>();
     public static NotificationService notificationService = new NotificationService(); // Added for potential broader use
 
     public static String lastSystemMessage = null;
+
+
+
 
     public Application (){
 

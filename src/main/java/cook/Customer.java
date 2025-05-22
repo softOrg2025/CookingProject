@@ -1,5 +1,4 @@
 package cook;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -8,9 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-
-
 public class Customer extends User {
     private List<String> preferences = new ArrayList<String>();
     private List<String> allergies = new ArrayList<String>();
@@ -18,17 +14,18 @@ public class Customer extends User {
     private static final Set<String> INCOMPATIBLE_INGREDIENTS = new HashSet<>(Arrays.asList("Milk", "Lemon"));
     private Map<String, Meal> savedMeals = new HashMap<>();
 
-    public Customer(String name , String email , String password ){
-        super(name , email , password , Role.Customer);
+
+    public Customer(String name, String email, String password) {
+        super(name, email, password, Role.Customer);
     }
 
-    // Consider normalizing stored preferences/allergies (e.g., to lowercase)
-    // or ensure all comparisons are case-insensitive.
-    // For now, keeping original behavior and handling case-insensitivity in checks.
+// Consider normalizing stored preferences/allergies (e.g., to lowercase)
+// or ensure all comparisons are case-insensitive.
+// For now, keeping original behavior and handling case-insensitivity in checks.
 
     public boolean savePreferences(String option) {
         // To prevent duplicates regardless of case, but store with original casing
-        if(preferences.stream().anyMatch(p -> p.equalsIgnoreCase(option))){
+        if (preferences.stream().anyMatch(p -> p.equalsIgnoreCase(option))) {
 
         }
         preferences.add(option);
@@ -37,7 +34,7 @@ public class Customer extends User {
 
     public boolean saveAllergy(String allergy) {
         // To prevent duplicates regardless of case, but store with original casing
-        if(allergies.stream().anyMatch(a -> a.equalsIgnoreCase(allergy))){
+        if (allergies.stream().anyMatch(a -> a.equalsIgnoreCase(allergy))) {
 
         }
         allergies.add(allergy);
@@ -63,4 +60,13 @@ public class Customer extends User {
     public Meal getSavedMeal(String mealName) {
         return this.savedMeals.get(mealName);
     }
+
+    // في كلاس Customer أضف هذه الدالة:
+    public Map<String, Meal> getSavedMeals() {
+        return Collections.unmodifiableMap(savedMeals); // إرجاع نسخة غير قابلة للتعديل
+    }
+
+    // ثم عدّل الدالة viewSavedMeals كالتالي:
+
+
 }

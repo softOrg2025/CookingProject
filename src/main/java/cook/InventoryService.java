@@ -85,6 +85,10 @@ public class InventoryService {
         return generatedPurchaseOrders.containsKey(orderId);
     }
 
+    public Map<String, InventoryItem> getInventoryItemsMap() {
+        return Collections.unmodifiableMap(this.inventory);
+    }
+
     public PurchaseOrder getPurchaseOrderByIngredientName(String ingredientName) {
         Objects.requireNonNull(ingredientName, "Ingredient name cannot be null");
         return generatedPurchaseOrders.values().stream()

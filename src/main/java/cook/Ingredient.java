@@ -60,14 +60,5 @@ public class Ingredient {
         return name.equalsIgnoreCase(that.name);
     }
 
-    @Override
-    public int hashCode() {
-        return name.toLowerCase().hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return name + (available ? "" : " (Unavailable)");
-    }
 
 }

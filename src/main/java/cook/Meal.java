@@ -1,14 +1,13 @@
 package cook;
-
 import java.util.*;
-
 public class Meal {
-    private final List<String> ingredients ;
+    private final List<String> ingredients;
     private final Map<String, Integer> ingredientQuantities;
     private final char size;
     private final double price;
     private String name;
     private static final Set<List<String>> incompatibleCombinations = new HashSet<>();
+    private final Map<String, Ingredient> ingredientObjects = new HashMap<>();
 
     static {
         incompatibleCombinations.add(Arrays.asList("Milk", "Lemon"));
@@ -28,6 +27,7 @@ public class Meal {
         this(ingredients, size, price);
         this.name = name;
     }
+
 
     public Map<String, Integer> getIngredientQuantities() {
         return Collections.unmodifiableMap(ingredientQuantities);
@@ -81,6 +81,7 @@ public class Meal {
             System.out.println("Cannot update quantity for " + ingredient + "; it is not in the meal.");
         }
     }
+
 
     @Override
     public boolean equals(Object o) {
