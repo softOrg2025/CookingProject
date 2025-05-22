@@ -41,7 +41,7 @@ public class Customer extends User {
     }
 
     public List<String> getAllergies() {
-        return Collections.unmodifiableList(allergies); // Return unmodifiable list
+        return Collections.unmodifiableList(allergies);
     }
 
     public List<String> getPreferences() {
