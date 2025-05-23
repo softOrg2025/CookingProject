@@ -1,5 +1,7 @@
 package cook;
 import java.util.*;
+import java.util.logging.Logger;
+
 public class Meal {
     private final List<String> ingredients;
     private final Map<String, Integer> ingredientQuantities;
@@ -8,6 +10,7 @@ public class Meal {
     private String name;
     private static final Set<List<String>> incompatibleCombinations = new HashSet<>();
     private final Map<String, Ingredient> ingredientObjects = new HashMap<>();
+    private static final Logger logger = Logger.getLogger(Meal.class.getName());
 
     static {
         incompatibleCombinations.add(Arrays.asList("Milk", "Lemon"));
@@ -78,7 +81,7 @@ public class Meal {
         if (ingredients.contains(ingredient)) {
             this.ingredientQuantities.put(ingredient, quantity);
         } else {
-            System.out.println("Cannot update quantity for " + ingredient + "; it is not in the meal.");
+            logger.warning("Cannot update quantity for " + ingredient +"; it is not in the meal.");
         }
     }
 

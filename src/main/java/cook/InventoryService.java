@@ -7,6 +7,7 @@ public class InventoryService {
     private final Map<String, InventoryItem> inventory = new HashMap<>();
     private final Map<String, PurchaseOrder> generatedPurchaseOrders = new HashMap<>();
     private final NotificationService notificationService;
+    private String Null_Ingredient = "Ingredient name cannot be null";
 
     public InventoryService() {
         this.notificationService = new NotificationService();
@@ -47,7 +48,7 @@ public class InventoryService {
     }
 
     public void updateStock(String ingredientName, int usedAmount) {
-        Objects.requireNonNull(ingredientName, "Ingredient name cannot be null");
+        Objects.requireNonNull(ingredientName, Null_Ingredient);
         InventoryItem item = inventory.get(ingredientName);
         if (item != null) {
             item.use(usedAmount);
@@ -63,7 +64,7 @@ public class InventoryService {
     }
 
     public int getCurrentStock(String ingredientName) {
-        Objects.requireNonNull(ingredientName, "Ingredient name cannot be null");
+        Objects.requireNonNull(ingredientName, Null_Ingredient);
         InventoryItem item = inventory.get(ingredientName);
         return item != null ? item.getQuantity() : 0;
     }
@@ -72,7 +73,7 @@ public class InventoryService {
                                                              int quantityToOrder,
                                                              String supplierName,
                                                              double price) {
-        Objects.requireNonNull(ingredientName, "Ingredient name cannot be null");
+        Objects.requireNonNull(ingredientName, Null_Ingredient);
         Objects.requireNonNull(supplierName, "Supplier name cannot be null");
 
         PurchaseOrder po = new PurchaseOrder(ingredientName, quantityToOrder, supplierName, price);
@@ -90,7 +91,7 @@ public class InventoryService {
     }
 
     public PurchaseOrder getPurchaseOrderByIngredientName(String ingredientName) {
-        Objects.requireNonNull(ingredientName, "Ingredient name cannot be null");
+        Objects.requireNonNull(ingredientName, Null_Ingredient);
         return generatedPurchaseOrders.values().stream()
                 .filter(po -> ingredientName.equals(po.getIngredientName()))
                 .findFirst()
